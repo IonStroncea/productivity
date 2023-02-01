@@ -1,0 +1,122 @@
+﻿@page
+@inject IHttpContextAccessor httpContextaccessor
+@model WebSite.Pages.PerformanceModel
+@{
+}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js">
+</script>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/jquery/latest/jquery.min.js"></script>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
+<script type="text/javascript" src="~/js/daterangepicker.js"></script>
+<script type="text/javascript" src="~/js/moment.min.js"></script>
+<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
+<link rel="stylesheet" type="text/css" href="~/css/daterangepicker.css" />
+<script type="text/javascript" src="~/js/date.js"></script>
+
+<div class="row">
+    <div class="col-2">
+        <select class="form-select" aria-label="Default select example" id="typeData">
+            <option value = "RAM" selected>RAM</option>
+            <option value="CPU">CPU</option>
+            <option value="GPU">GPU</option>
+        </select>
+        <br/>
+        <select class="form-select" aria-label="Default select example" id="computerId">
+            <option value="0" selected>Select computer</option>
+            @foreach (var computer in @Model.computers)
+            {
+                <option value="@computer.Key">@computer.Value</option>
+            }
+        </select>
+        <br/>
+        <div>
+            <input type="text" id="demo" class="demo" value="01/01/2018 - 01/15/2018" />
+        </div>
+        <br/>
+        <div class="form-check">
+            <input class="form-check-input" type="checkbox" value="" id="flexCheckChecked" checked>
+            <label class="form-check-label" for="flexCheckChecked">
+                All time
+            </label>
+        </div>
+        <br/>
+        <button type="button" class="btn btn-primary" onclick="GetChartData()">Submit</button>
+    </div>
+    <div class="col-10">
+        <canvas id="myChart" style="width:100%;max-width:1000px"></canvas>
+     </div>
+</div>
+
+<script>
+      
+    $('#demo').daterangepicker({
+        "startDate": "01/24/2023",
+        "endDate": "01/30/2023"
+    }, function (start, end, label) {
+        console.log('New date range selected: ' + start.format('YYYY-MM-DD') + ' to ' + end.format('YYYY-MM-DD') + ' (predefined range: ' + label + ')');
+    });
+</script>
+
+<script>
+    var xValues = [];
+    var yValues = [];
+
+
+    function redraw(){
+        new Chart("myChart", {
+        type: "line",
+        data: {
+            labels: xValues,
+            datasets: [{
+                fill: false,
+                lineTension: 0,
+                backgroundColor: "rgba(0,0,255,1.0)",
+                borderColor: "rgba(0,0,255,0.1)",
+                data: yValues
+            }]
+        },
+        options: {
+            legend: { display: false },
+            scales: {
+                yAxes: [{ ticks: { min: 0, max: 100 } }],
+            }
+        }
+    });
+    }
+</script>
+<script>
+    $(document).ready(function () {
+        GetChartData();
+    });
+
+    var chartData = {};
+
+    function myFunction(d) {
+        xValues.push(d.date.toString('dd-MM-yyyy hh:mm:ss'));
+        yValues.push(d.usage);
+    }
+
+    function compare(a, b) {
+        return Date.compare(Date.parse(a.date), Date.parse(b.date));
+    }
+
+    var GetChartData = function () {
+        $.ajax({
+            url: 'https://localhost:7155/api/AllSavedValues',
+            data: { type: document.getElementById("typeData").value, computerId: document.getElementById("computerId").value, userId: '@httpContextaccessor.HttpContext.Session.GetInt32("userId")' },
+            method: 'GET',
+            dataType: 'json',
+            success: function (d) {
+                xValues = [];
+                yValues = [];
+
+                d.sort(compare);
+                d.forEach(myFunction);
+
+                redraw();
+            }
+        });
+    };
+
+</script>

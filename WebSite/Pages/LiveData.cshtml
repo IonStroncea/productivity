@@ -1,0 +1,107 @@
+﻿@page
+@inject IHttpContextAccessor httpContextaccessor
+@model WebSite.Pages.LiveDataModel
+@{
+}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js">
+</script>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/jquery/latest/jquery.min.js"></script>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+<script type="text/javascript" src="~/js/moment.min.js"></script>
+<script type="text/javascript" src="~/js/date.js"></script>
+
+<div class="row">
+    <div class="col-2">
+        <select class="form-select" aria-label="Default select example" id="typeData">
+            <option value = "RAM" selected>RAM</option>
+            <option value="CPU">CPU</option>
+            <option value="GPU">GPU</option>
+        </select>
+        <br/>
+        <select class="form-select" aria-label="Default select example" id="computerId">
+            <option value="0" selected>Select computer</option>
+            @foreach (var computer in @Model.computers)
+            {
+                <option value="@computer.Key">@computer.Value</option>
+            }
+        </select>
+        <br/>
+        <button type="button" class="btn btn-primary" onclick="recreateSocket()">Submit</button>
+    </div>
+    <div class="col-10">
+        <canvas id="myChart" style="width:100%;max-width:1000px"></canvas>
+     </div>
+</div>
+
+<script>
+    var xValues = [];
+    var yValues = [];
+
+
+    function redraw() {
+        new Chart("myChart", {
+            type: "line",
+            data: {
+                labels: xValues,
+                datasets: [{
+                    fill: false,
+                    lineTension: 0,
+                    backgroundColor: "rgba(0,0,255,1.0)",
+                    borderColor: "rgba(0,0,255,0.1)",
+                    data: yValues
+                }]
+            },
+            options: {
+                legend: { display: false },
+                scales: {
+                    yAxes: [{ ticks: { min: 0, max: 100 } }],
+                }
+            }
+        });
+    }
+</script>
+<script>
+    var ws;
+    $(document).ready(function () {   
+        redraw();
+        ws = CreateSocket();
+    });
+
+    function recreateSocket()
+    {
+        xValues = [];
+        yValues = [];
+
+        ws.close();
+        CreateSocket();
+    }
+
+    function CreateSocket()
+    {
+        var scheme = document.location.protocol == "https:" ?"wss" : "ws";
+        var url = '' + scheme + '://localhost:7155/api/LiveData';
+        var ws = new WebSocket(url);
+
+        ws.onopen = function()
+        {
+            ws.send(document.getElementById("typeData").value + "+" + document.getElementById("computerId").value + "+" + '@httpContextaccessor.HttpContext.Session.GetInt32("userId")');
+        }
+
+        ws.onmessage = function(evt)
+        {
+            var recieved_msg = JSON.parse(evt.data);
+            console.log(recieved_msg);
+            console.log(recieved_msg.date);
+            console.log(recieved_msg.usage);
+
+            xValues.push(recieved_msg.date);
+            
+            yValues.push(recieved_msg.usage);   
+
+            redraw();
+        }
+
+        return ws;
+    }
+
+</script>
