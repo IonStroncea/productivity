@@ -20,6 +20,43 @@ namespace DAL
             this.connectionStringProvider = connectionStringProvider;
         }
 
+        public int CreateComputer(int userId, string compName)
+        {
+            try
+            {
+
+                int compId = -1;
+
+                using (SqlConnection conn = new SqlConnection(connectionStringProvider.GetConnectionString()))
+                using (SqlCommand cmd = new SqlCommand("Create_Comp", conn))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.Parameters.Add("@compName", SqlDbType.Char, 100).Value = userId;
+                    cmd.Parameters.Add("@userId", SqlDbType.Int).Value = compName;
+                    cmd.Parameters.Add("@compId", SqlDbType.Int).Direction = ParameterDirection.Output;
+
+                    try
+                    {
+                        conn.Open();
+                        cmd.ExecuteNonQuery();
+                        compId = Convert.ToInt32(cmd.Parameters["@compId"].Value);
+                    }
+                    catch (Exception e)
+                    { }
+                    finally
+                    {
+                        conn.Close();
+                    }
+                }
+
+                return userId;
+            }
+            catch (Exception e)
+            {
+                return -1;
+            }
+        }
+
         public Dictionary<int, string> GetAllComputers(int userId)
         {
             Dictionary<int, string> result = new Dictionary<int, string>();

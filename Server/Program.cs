@@ -29,6 +29,8 @@ namespace Server
             builder.Services.AddScoped<IDataReciever, DataReciever>();
             builder.Services.AddScoped<IDataSource, DataSource>();
             builder.Services.AddScoped<IDataSender, DataSender>();
+            builder.Services.AddSingleton<ILogin, UserLogin>();
+            builder.Services.AddSingleton<IUserDataSource, UserDataSource>();
 
             builder.Services.AddCors(options =>
             {

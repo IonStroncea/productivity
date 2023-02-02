@@ -43,6 +43,14 @@
             this.gpuUssageLabel = new System.Windows.Forms.Label();
             this.ramUssageLabel = new System.Windows.Forms.Label();
             this.sendLabel = new System.Windows.Forms.Label();
+            this.userNameLabel = new System.Windows.Forms.Label();
+            this.passwordLabel = new System.Windows.Forms.Label();
+            this.userNameTextBox = new System.Windows.Forms.TextBox();
+            this.passwodTextBox = new System.Windows.Forms.TextBox();
+            this.loginButton = new System.Windows.Forms.Button();
+            this.compNameLabel = new System.Windows.Forms.Label();
+            this.compNameTextBox = new System.Windows.Forms.TextBox();
+            this.newCompCheckBox = new System.Windows.Forms.CheckBox();
             this.iconMenu.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -150,12 +158,90 @@
             this.sendLabel.Size = new System.Drawing.Size(38, 15);
             this.sendLabel.TabIndex = 7;
             this.sendLabel.Text = "label1";
+            this.sendLabel.Visible = false;
+            // 
+            // userNameLabel
+            // 
+            this.userNameLabel.AutoSize = true;
+            this.userNameLabel.Location = new System.Drawing.Point(26, 45);
+            this.userNameLabel.Name = "userNameLabel";
+            this.userNameLabel.Size = new System.Drawing.Size(60, 15);
+            this.userNameLabel.TabIndex = 8;
+            this.userNameLabel.Text = "Username";
+            this.userNameLabel.Click += new System.EventHandler(this.userNameLabel_Click);
+            // 
+            // passwordLabel
+            // 
+            this.passwordLabel.AutoSize = true;
+            this.passwordLabel.Location = new System.Drawing.Point(26, 90);
+            this.passwordLabel.Name = "passwordLabel";
+            this.passwordLabel.Size = new System.Drawing.Size(57, 15);
+            this.passwordLabel.TabIndex = 9;
+            this.passwordLabel.Text = "Password";
+            // 
+            // userNameTextBox
+            // 
+            this.userNameTextBox.Location = new System.Drawing.Point(26, 63);
+            this.userNameTextBox.Name = "userNameTextBox";
+            this.userNameTextBox.Size = new System.Drawing.Size(100, 23);
+            this.userNameTextBox.TabIndex = 10;
+            // 
+            // passwodTextBox
+            // 
+            this.passwodTextBox.Location = new System.Drawing.Point(26, 108);
+            this.passwodTextBox.Name = "passwodTextBox";
+            this.passwodTextBox.Size = new System.Drawing.Size(100, 23);
+            this.passwodTextBox.TabIndex = 11;
+            // 
+            // loginButton
+            // 
+            this.loginButton.Location = new System.Drawing.Point(26, 206);
+            this.loginButton.Name = "loginButton";
+            this.loginButton.Size = new System.Drawing.Size(75, 23);
+            this.loginButton.TabIndex = 12;
+            this.loginButton.Text = "Log In";
+            this.loginButton.UseVisualStyleBackColor = true;
+            this.loginButton.Click += new System.EventHandler(this.loginButton_Click);
+            // 
+            // compNameLabel
+            // 
+            this.compNameLabel.AutoSize = true;
+            this.compNameLabel.Location = new System.Drawing.Point(26, 134);
+            this.compNameLabel.Name = "compNameLabel";
+            this.compNameLabel.Size = new System.Drawing.Size(96, 15);
+            this.compNameLabel.TabIndex = 13;
+            this.compNameLabel.Text = "Computer Name";
+            // 
+            // compNameTextBox
+            // 
+            this.compNameTextBox.Location = new System.Drawing.Point(26, 152);
+            this.compNameTextBox.Name = "compNameTextBox";
+            this.compNameTextBox.Size = new System.Drawing.Size(100, 23);
+            this.compNameTextBox.TabIndex = 14;
+            // 
+            // newCompCheckBox
+            // 
+            this.newCompCheckBox.AutoSize = true;
+            this.newCompCheckBox.Location = new System.Drawing.Point(26, 181);
+            this.newCompCheckBox.Name = "newCompCheckBox";
+            this.newCompCheckBox.Size = new System.Drawing.Size(105, 19);
+            this.newCompCheckBox.TabIndex = 15;
+            this.newCompCheckBox.Text = "New computer";
+            this.newCompCheckBox.UseVisualStyleBackColor = true;
             // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(437, 268);
+            this.Controls.Add(this.newCompCheckBox);
+            this.Controls.Add(this.compNameTextBox);
+            this.Controls.Add(this.compNameLabel);
+            this.Controls.Add(this.loginButton);
+            this.Controls.Add(this.passwodTextBox);
+            this.Controls.Add(this.userNameTextBox);
+            this.Controls.Add(this.passwordLabel);
+            this.Controls.Add(this.userNameLabel);
             this.Controls.Add(this.sendLabel);
             this.Controls.Add(this.ramUssageLabel);
             this.Controls.Add(this.gpuUssageLabel);
@@ -188,5 +274,13 @@
         private Label gpuUssageLabel;
         private Label ramUssageLabel;
         private Label sendLabel;
+        private Label userNameLabel;
+        private Label passwordLabel;
+        private TextBox userNameTextBox;
+        private TextBox passwodTextBox;
+        private Button loginButton;
+        private Label compNameLabel;
+        private TextBox compNameTextBox;
+        private CheckBox newCompCheckBox;
     }
 }

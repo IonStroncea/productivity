@@ -3,14 +3,17 @@ using ComputerInfo;
 using System.Collections.Concurrent;
 using System.Reflection.PortableExecutable;
 using System.Timers;
+using System.Net.Http;
 
 namespace UserApp
 {
     public partial class MainForm : Form
     {
-        int computerId = 1;
+        int computerId = 0;
         bool _closeApp = false;
         bool savedLatest = false;
+        private static readonly HttpClient client = new HttpClient();
+        string appToken;
 
         ServerComunicator comunicator = default;
 
@@ -47,6 +50,8 @@ namespace UserApp
                 infos.Enqueue(lastInfo);
                 savedLatest = true;
             }
+
+            Invoke((MethodInvoker)delegate { sendLabel.Text = $"Tansmited {sentData} data {remainData} reamining"; });
         }
 
         public void WriteInfosToFile()
@@ -91,7 +96,6 @@ namespace UserApp
                 Invoke((MethodInvoker)delegate { cpuUssageLabel.Text = lastInfo.GetInfo(RSInfoType.CPU).Usage.ToString() + "%"; });
                 Invoke((MethodInvoker)delegate { gpuUssageLabel.Text = lastInfo.GetInfo(RSInfoType.GPU).Usage.ToString() + "%"; });
                 Invoke((MethodInvoker)delegate { ramUssageLabel.Text = lastInfo.GetInfo(RSInfoType.RAM).Usage.ToString() + "%"; });
-                Invoke((MethodInvoker)delegate { sendLabel.Text = $"Tansmited {sentData} data {remainData} reamining"; });
             }
             catch { }
         }
@@ -112,10 +116,9 @@ namespace UserApp
             sendLatestMRSInfoTimer = new Thread(() => { while (appRunning) { Thread.Sleep(1000); SendLatest(); } });
 
             getSystemInfoTimer.Start();
-            changeLabelsTimer.Start();
             writeInfosToFileTimer.Start();
-            readAndSendTimer.Start();
-            sendLatestMRSInfoTimer.Start();
+            changeLabelsTimer.Start();
+
 
         }
 
@@ -158,6 +161,74 @@ namespace UserApp
 
                 return;
             }
+        }
+
+        private void loginButton_Click(object sender, EventArgs e)
+        {
+            Thread t1 = new Thread(() => { 
+                string token = LogIn().Result;
+
+                Invoke((MethodInvoker)delegate {
+                    if (token != "Error")
+                    {
+                        computerId = Int32.Parse(token.Split("==")[3]);
+
+                        appToken = token;
+                        userNameLabel.Visible = false;
+                        userNameTextBox.Visible = false;
+
+                        passwordLabel.Visible = false;
+                        passwodTextBox.Visible = false;
+
+                        loginButton.Visible = false;
+
+                        compNameLabel.Visible = false;
+                        compNameTextBox.Visible = false;
+                        newCompCheckBox.Visible = false;
+
+                        sendLabel.Visible = true;
+
+                        readAndSendTimer.Start();
+                        sendLatestMRSInfoTimer.Start();
+                    }
+                });
+            });
+            t1.Start();
+            
+        }
+
+        private void userNameLabel_Click(object sender, EventArgs e)
+        {
+        }
+
+        private async Task<string> LogIn()
+        {
+            try
+            {
+                var values = new Dictionary<string, string>
+                {
+                    { "username", userNameTextBox.Text },
+                    { "password", passwodTextBox.Text },
+                    { "compName", compNameTextBox.Text },
+                    { "newComp", newCompCheckBox.Enabled.ToString() }
+                };
+
+                string uri = "https://localhost:7155/api/User?" + values.ElementAt(0).Key + "=" + values.ElementAt(0).Value +
+                                                                "&" + values.ElementAt(1).Key + "=" + values.ElementAt(1).Value +
+                                                                "&" + values.ElementAt(2).Key + "=" + values.ElementAt(2).Value +
+                                                                "&" + values.ElementAt(3).Key + "=" + values.ElementAt(3).Value;
+
+                var response = await client.GetAsync(uri);
+
+                var text = response.Content.ReadAsStringAsync().Result;
+
+                return text;
+            }
+            catch (Exception e)
+            {
+                return "Error";
+            }
+
         }
     }
 }

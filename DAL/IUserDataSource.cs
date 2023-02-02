@@ -9,5 +9,7 @@ namespace DAL
     public interface IUserDataSource
     {
         Dictionary<int, string> GetAllComputers(int userId);
+
+        int CreateComputer(int userId, string compName);
     }
 }
