@@ -20,5 +20,7 @@ namespace DAL
         public int GetCacheSize();
 
         public bool CacheContaints(int computerId);
+
+        public List<RSInfo> GetAllRSInfoByType100(int computerId, RSInfoType type);
     }
 }

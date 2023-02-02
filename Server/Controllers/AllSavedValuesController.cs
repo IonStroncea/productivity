@@ -21,7 +21,7 @@ namespace Server.Controllers
         {
             RSInfoType rSInfo = (RSInfoType)Enum.Parse(typeof(RSInfoType), type);
 
-            List<RSInfo> result = dataSender.GetAllRSInfoByType(computerId, rSInfo);
+            List<RSInfo> result = dataSender.GetAllRSInfoByType100(computerId, rSInfo);
 
             return result;
         }

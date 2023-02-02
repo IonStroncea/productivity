@@ -53,5 +53,34 @@ namespace ServerLibrary
         {
             return cache.Contains(computerId);
         }
+
+        public List<RSInfo> GetAllRSInfoByType100(int computerId, RSInfoType type)
+        {
+            List<RSInfo> list = GetAllRSInfoByType(computerId, type);
+
+            if (list.Count <= 100)
+            {
+                return list;
+            }
+
+            int step = list.Count / 100;
+
+            List<RSInfo> result = new List<RSInfo>();
+
+            for (int i = 0; i < 100; i++)
+            {
+                int usage = 0;
+
+                for (int j = 0; j < step; j++)
+                {
+                    usage += list[i * step + j].Usage;
+                }
+                usage = usage / step;
+
+                result.Add(new RSInfo(type, usage, list[i * step].Date));
+            }
+
+            return result;
+        }
     }
 }
