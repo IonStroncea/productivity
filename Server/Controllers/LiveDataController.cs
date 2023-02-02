@@ -44,12 +44,7 @@ namespace Server.Controllers
             var buffer = new byte[1024 * 4];
             WebSocketReceiveResult result = await socket.ReceiveAsync(new ArraySegment<byte>(buffer), CancellationToken.None);
 
-            Console.WriteLine(result);
-            Console.WriteLine(result.Count);
-
             string message = System.Text.Encoding.Default.GetString(buffer);
-
-            Console.WriteLine(message);
 
             string [] values = message.Split('+');
 
@@ -61,7 +56,7 @@ namespace Server.Controllers
             {
                 if (dataSender.CacheContaints(computerId))
                 {
-                    MRSInfo Minfo =  dataSender.GetLatestMRSInfo(computerId);
+                    MRSInfo Minfo = dataSender.GetLatestMRSInfo(computerId);
 
                     RSInfo info = Minfo.GetInfo(type);
 
@@ -71,6 +66,24 @@ namespace Server.Controllers
 
                     await socket.SendAsync(arraySegment, WebSocketMessageType.Text, true, CancellationToken.None);
                 }
+                else 
+                {
+                    string jsonResult = "{\"date\": \"" + 0 + "\", \"usage\": \"" + 0 + "\" }";
+                    var bytes = Encoding.ASCII.GetBytes(jsonResult);
+                    var arraySegment = new ArraySegment<byte>(bytes);
+
+                    await socket.SendAsync(arraySegment, WebSocketMessageType.Text, true, CancellationToken.None);
+                }
+
+                result = await socket.ReceiveAsync(new ArraySegment<byte>(buffer), CancellationToken.None);
+
+                message = System.Text.Encoding.Default.GetString(buffer);
+
+                values = message.Split('+');
+
+                computerId = Int32.Parse(values[1]);
+                userId = Int32.Parse(values[2]);
+                type = (RSInfoType)Enum.Parse(typeof(RSInfoType), values[0]);
 
                 Thread.Sleep(1000);
             }

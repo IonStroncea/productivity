@@ -62,7 +62,12 @@
 </script>
 <script>
     var ws;
-    $(document).ready(function () {   
+    $(document).ready(function () {  
+        for (let i = 0; i < 100; i++) {
+            xValues.push(0);     
+            yValues.push(0);
+        }
+
         redraw();
         ws = CreateSocket();
     });
@@ -72,8 +77,10 @@
         xValues = [];
         yValues = [];
 
-        ws.close();
-        CreateSocket();
+        for (let i = 0; i < 100; i++) {
+            xValues.push(0);     
+            yValues.push(0);
+        }
     }
 
     function CreateSocket()
@@ -90,16 +97,29 @@
         ws.onmessage = function(evt)
         {
             var recieved_msg = JSON.parse(evt.data);
-            console.log(recieved_msg);
-            console.log(recieved_msg.date);
-            console.log(recieved_msg.usage);
 
-            xValues.push(recieved_msg.date);
+            xValues.shift();
+            yValues.shift();
+
+            xValues.push(recieved_msg.date);      
+            yValues.push(recieved_msg.usage);
             
-            yValues.push(recieved_msg.usage);   
+            ws.send(document.getElementById("typeData").value + "+" + document.getElementById("computerId").value + "+" + '@httpContextaccessor.HttpContext.Session.GetInt32("userId")');
 
             redraw();
         }
+
+        ws.onclose = function (event){
+            if(event.wasClean)
+            {
+                console.log("Connection closed");
+            }
+            else
+            {
+                console.log("Connection killed");
+            }
+        };
+
 
         return ws;
     }
