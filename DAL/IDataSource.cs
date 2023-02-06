@@ -15,5 +15,7 @@ namespace DAL
         List<RSInfo> GetAllRSInfoByType(int comuterId, RSInfoType type);
 
         List<RSInfo> GetAllRSInfo(int comuterId);
+
+        List<RSInfo> GetAllRSInfoByTypeAndDate(RSInfoType type, int computerId, DateTime startDate, DateTime endtDate);
     }
 }

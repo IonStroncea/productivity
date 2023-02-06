@@ -41,7 +41,7 @@
             </label>
         </div>
         <br/>
-        <button type="button" class="btn btn-primary" onclick="GetChartData()">Submit</button>
+        <button type="button" class="btn btn-primary" onclick="getData()">Submit</button>
     </div>
     <div class="col-10">
         <canvas id="myChart" style="width:100%;max-width:1000px"></canvas>
@@ -51,10 +51,14 @@
 <script>
       
     $('#demo').daterangepicker({
+        "timePicker": true,
+        "timePicker24Hour": true,
         "startDate": "01/24/2023",
         "endDate": "01/30/2023"
     }, function (start, end, label) {
-        console.log('New date range selected: ' + start.format('YYYY-MM-DD') + ' to ' + end.format('YYYY-MM-DD') + ' (predefined range: ' + label + ')');
+        startDate = start.format('YYYY-MM-DD HH:mm');
+        endtDate = end.format('YYYY-MM-DD HH:mm');
+        console.log('New date range selected: ' + startDate + ' to ' + endtDate + ' (predefined range: ' + label + ')');
     });
 </script>
 
@@ -86,6 +90,9 @@
     }
 </script>
 <script>
+    var startDate;
+    var endtDate;
+
     $(document).ready(function () {
         GetChartData();
     });
@@ -100,6 +107,41 @@
     function compare(a, b) {
         return Date.compare(Date.parse(a.date), Date.parse(b.date));
     }
+
+    var GetCharDataByDate = function ()
+    {
+            $.ajax({
+            url: 'https://localhost:7155/api/SavedValuesByDate',
+            data: { type: document.getElementById("typeData").value, 
+            computerId: document.getElementById("computerId").value, 
+            userId: '@httpContextaccessor.HttpContext.Session.GetInt32("userId")',
+            startDate : startDate,
+            endtDate : endtDate},
+            method: 'GET',
+            dataType: 'json',
+            success: function (d) {
+                xValues = [];
+                yValues = [];
+
+                d.sort(compare);
+                d.forEach(myFunction);
+
+                redraw();
+            }
+        });
+    };
+
+    var getData = function()
+    {
+        if (document.getElementById('flexCheckChecked').checked)
+        {
+            GetChartData();
+        }
+        else
+        {
+            GetCharDataByDate();
+        }
+    };
 
     var GetChartData = function () {
         $.ajax({

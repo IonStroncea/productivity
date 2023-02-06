@@ -183,5 +183,56 @@ namespace DAL
 
             return inside;
         }
+
+        public List<RSInfo> GetAllRSInfoByTypeAndDate(RSInfoType type, int computerId, DateTime startDate, DateTime endtDate)
+        {
+            List<RSInfo> inside = new List<RSInfo>();
+
+            try
+            {
+                using (SqlConnection con = new SqlConnection(connectionStringProvider.GetConnectionString()))
+                {
+                    con.Open();
+
+
+                    using (SqlCommand cmd = new SqlCommand("GetRSInfo_by_computer_type_daterange", con))
+                    {
+                        cmd.CommandType = CommandType.StoredProcedure;
+
+                        cmd.Parameters.Add("@computerId", SqlDbType.Int).Value = computerId;
+                        cmd.Parameters.Add("@info_type", SqlDbType.Char, 50).Value = type.ToString();
+                        cmd.Parameters.Add("@startDate", SqlDbType.DateTime).Value = startDate;
+                        cmd.Parameters.Add("@endDate", SqlDbType.DateTime).Value = endtDate;
+
+                        using (SqlDataAdapter da = new SqlDataAdapter(cmd))
+                        {
+                            DataSet ds = new DataSet();
+                            da.Fill(ds, "result_name");
+
+                            DataTable dt = ds.Tables["result_name"];
+
+                            foreach (DataRow row in dt.Rows)
+                            {
+                                RSInfo info = new RSInfo();
+
+                                info.Usage = (int)row["usage"];
+                                info.Date = Convert.ToDateTime(row["measure_time"]);
+                                info.Type = (RSInfoType)Enum.Parse(typeof(RSInfoType), row["info_type"].ToString(), true);
+
+                                inside.Add(info);
+                            }
+                        }
+                    }
+
+                    con.Close();
+                }
+            }
+            catch (Exception ex)
+            {
+                return inside;
+            }
+
+            return inside;
+        }
     }
 }

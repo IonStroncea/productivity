@@ -22,5 +22,11 @@ namespace DAL
         public bool CacheContaints(int computerId);
 
         public List<RSInfo> GetAllRSInfoByType100(int computerId, RSInfoType type);
+
+        public List<RSInfo> GetAllRSInfoByTypeAndDate100(RSInfoType type, int computerId, int userId, string startDate, string endtDate);
+
+        public List<RSInfo> GetAllRSInfoByTypeAndDate100(RSInfoType type, int computerId, int userId, DateTime startDate, DateTime endtDate);
+
+        public List<RSInfo> GetAllRSInfoByTypeAndDate(RSInfoType type, int computerId, DateTime startDate, DateTime endtDate);
     }
 }
