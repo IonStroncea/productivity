@@ -18,5 +18,7 @@ namespace ServerLibrary
         public ReturnStatus Save(MRSInfo info, int computerId);
 
         public ReturnStatus Save(RSInfo info, int computerId);
+
+        public ReturnStatus RecieveLatestUssageInfo(List<ProcessUssageInfo> info, int computerId);
     }
 }

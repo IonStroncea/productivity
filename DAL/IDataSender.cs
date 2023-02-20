@@ -28,5 +28,7 @@ namespace DAL
         public List<RSInfo> GetAllRSInfoByTypeAndDate100(RSInfoType type, int computerId, int userId, DateTime startDate, DateTime endtDate);
 
         public List<RSInfo> GetAllRSInfoByTypeAndDate(RSInfoType type, int computerId, DateTime startDate, DateTime endtDate);
+
+        public List<ProcessUssageInfo> GetLatestUssageInfo(int computerId);
     }
 }

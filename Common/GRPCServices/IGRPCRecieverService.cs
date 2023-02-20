@@ -18,5 +18,8 @@ namespace Common.GRPCServices
 
         [OperationContract]
         public RecieveMessageResult SaveRSInfo(RecieveMessageRSInfo info);
+
+        [OperationContract]
+        public RecieveMessageResult RecieveLatestUssageInfo(UssageInfoMessage info);
     }
 }

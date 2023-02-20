@@ -30,6 +30,9 @@
                             <a class="nav-link text-dark" asp-area="" asp-page="/LiveData">Live data</a>
                         </li>
                         <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" asp-page="/Processes">Proecesses Live</a>
+                        </li>
+                        <li class="nav-item">
                             @if (httpContextaccessor.HttpContext.Session.Get("userId") == null)
                             {
                                 <a class="nav-link text-dark" asp-area="" asp-page="/Register">Register</a>

@@ -13,11 +13,13 @@ namespace ServerLibrary
     {
         public IDataSource dataSource;
         public ICache cache;
+        public IProccesUssageCache proccesUssage;
 
-        public DataSender(IDataSource dataSource, ICache cache)
+        public DataSender(IDataSource dataSource, ICache cache, IProccesUssageCache proccesUssage)
         {
             this.dataSource = dataSource;
             this.cache = cache;
+            this.proccesUssage = proccesUssage;
         }
 
         public List<MRSInfo> GetAllMRSInfo(int computerId)
@@ -121,6 +123,15 @@ namespace ServerLibrary
         public List<RSInfo> GetAllRSInfoByTypeAndDate(RSInfoType type, int computerId, DateTime startDate, DateTime endtDate)
         {
             return dataSource.GetAllRSInfoByTypeAndDate(type, computerId, startDate, endtDate);
+        }
+
+        public List<ProcessUssageInfo> GetLatestUssageInfo(int computerId)
+        {
+            if (proccesUssage.GetSize() > 0)
+            {
+                return proccesUssage.GetLatest(computerId);
+            }
+            return new List<ProcessUssageInfo>();
         }
     }
 }

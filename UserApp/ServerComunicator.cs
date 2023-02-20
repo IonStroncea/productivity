@@ -54,6 +54,29 @@ namespace UserApp
             return result;
         }
 
+        public ReturnStatus SendProccesUssageInfo(List<ProcessUssageInfo> infos, int computerId)
+        {
+            ReturnStatus reply = ReturnStatus.Fail;
+
+            try
+            {
+                UssageInfoMessage message = new UssageInfoMessage();
+                message.infos = infos;
+                message.computerId = computerId;
+
+                lock (client)
+                {
+                    reply = client.RecieveLatestUssageInfo(message).status;
+                }
+            }
+            catch (Exception ex)
+            {
+                return ReturnStatus.Error;
+            }
+
+            return reply;
+        }
+
         public ReturnStatus SentMRSInfoLatest(MRSInfo toSend, int computerId)
         {
             ReturnStatus reply = ReturnStatus.Fail;

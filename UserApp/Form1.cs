@@ -19,6 +19,8 @@ namespace UserApp
 
         ConcurrentQueue<MRSInfo> infos = default;
         MRSInfo lastInfo = new MRSInfo();
+        List<ProcessUssageInfo> lastProccessInfo = new List<ProcessUssageInfo>();
+        ProccessUssageGetter proccessUssageGetter = new ProccessUssageGetter();
         ResourseUsageInfo resourseUsage = default;
         InfoWriter writer = default;
         int sentData = 0;
@@ -38,12 +40,16 @@ namespace UserApp
 
             lastInfo = info;
             savedLatest = false;
+
+            lastProccessInfo = proccessUssageGetter.GetProcessesInfo();
+
             //infos.Enqueue(info);
         }
 
         public void SendLatest()
         {
             ReturnStatus result = comunicator.SentMRSInfoLatest(lastInfo, computerId);
+            ReturnStatus resultUssage = comunicator.SendProccesUssageInfo(lastProccessInfo, computerId);
 
             if (result != ReturnStatus.Success && !savedLatest)
             {

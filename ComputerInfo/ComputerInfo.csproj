@@ -48,6 +48,9 @@
   <ItemGroup>
     <Compile Include="InfoWriter.cs" />
     <Compile Include="MRSInfo.cs" />
+    <Compile Include="ProccessUssageGetter.cs" />
+    <Compile Include="ProcessUssage.cs" />
+    <Compile Include="ProcessUssageInfo.cs" />
     <Compile Include="ResourseUsageInfo.cs" />
     <Compile Include="RSInfo.cs" />
     <Compile Include="RSInfoSend.cs" />

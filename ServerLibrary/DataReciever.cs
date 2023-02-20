@@ -9,11 +9,13 @@ namespace ServerLibrary
     {
         public IDataSaver dataSaver;
         public ICache cache;
+        public IProccesUssageCache proccesUssageCache;
 
-        public DataReciever(IDataSaver dataSaver, ICache cache)
+        public DataReciever(IDataSaver dataSaver, ICache cache, IProccesUssageCache proccesUssageCache)
         {
             this.dataSaver = dataSaver;
             this.cache = cache;
+            this.proccesUssageCache = proccesUssageCache;
         }
         public ReturnStatus RecieveLatest(MRSInfo info, int computerId)
         {
@@ -25,6 +27,15 @@ namespace ServerLibrary
             }
 
             return Save(info, computerId);
+        }
+
+        public ReturnStatus RecieveLatestUssageInfo(List<ProcessUssageInfo> info, int computerId)
+        {
+            ReturnStatus status =  proccesUssageCache.AddProccesUssage(info, computerId);
+
+            Console.WriteLine($"Current length {proccesUssageCache.GetSize()}");
+
+            return status;
         }
 
         public ReturnStatus Save(MRSInfo info, int computerId)

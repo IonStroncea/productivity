@@ -1,5 +1,6 @@
 ﻿using Common;
 using Common.GRPCServices;
+using ComputerInfo;
 using ServerLibrary;
 
 namespace Server.GRPCServices
@@ -17,6 +18,13 @@ namespace Server.GRPCServices
             Console.WriteLine($"RecieveLatest message form computer {info.computerId}");
 
             return new RecieveMessageResult(dataReciever.RecieveLatest(info.info, info.computerId));
+        }
+
+        public RecieveMessageResult RecieveLatestUssageInfo(UssageInfoMessage info)
+        {
+            Console.WriteLine($"Recieved procces ussage info form {info.computerId} with {info.infos.Count} values");
+
+            return new RecieveMessageResult(dataReciever.RecieveLatestUssageInfo(info.infos, info.computerId)); 
         }
 
         public RecieveMessageResult SaveMRSInfo(RecieveMessageMRSInfo info)

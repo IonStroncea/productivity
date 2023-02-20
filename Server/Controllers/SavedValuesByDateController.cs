@@ -17,7 +17,7 @@ namespace Server.Controllers
         }
 
         [HttpGet]
-        public List<RSInfo> GetAllByTypeAndDate(string type, int computerId, int userId, string startDate, string endtDate)
+        public List<RSInfo> GetAllByTypeAndDate(string type,int computerId, int userId, string startDate, string endtDate)
         {
             RSInfoType rSInfo = (RSInfoType)Enum.Parse(typeof(RSInfoType), type);
 

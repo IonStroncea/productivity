@@ -43,5 +43,10 @@ namespace ServerLibraryTest
 
             return result;
         }
+
+        public List<RSInfo> GetAllRSInfoByTypeAndDate(RSInfoType type, int computerId, DateTime startDate, DateTime endtDate)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

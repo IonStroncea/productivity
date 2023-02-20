@@ -26,6 +26,7 @@ namespace Server
             builder.Services.AddSingleton<IConnectionStringProvider, ConnecionStringProvider>();
             builder.Services.AddSingleton<IDataSaver, DataSaver>();
             builder.Services.AddSingleton<ICache, Cache>();
+            builder.Services.AddSingleton<IProccesUssageCache, ProcessUssageCache>();
             builder.Services.AddScoped<IDataReciever, DataReciever>();
             builder.Services.AddScoped<IDataSource, DataSource>();
             builder.Services.AddScoped<IDataSender, DataSender>();
