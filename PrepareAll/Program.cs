@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using ComputerInfo;
+using Computerinfo;
 
 namespace PrepareAll
 {
@@ -13,25 +13,23 @@ namespace PrepareAll
     {
         public static void Main()
         {
-            ProccessUssageGetter proccessUssage = new ProccessUssageGetter();
+            IGetComputerInfo info = new GetComputerInfo();
 
-            Thread.Sleep(2000);
+            Console.WriteLine(info.GetRAMMB());
+            Console.WriteLine(info.GetCPUFreqMHZ());
 
-            for (int i = 0; i < 1000; i++)
+            Console.WriteLine(info.GetRAMGB() + " GB");
+            Console.WriteLine(info.GetCPUFreqGHZ() + " GHZ");
+
+            foreach (string name in info.GetCPUName())
             {
-                List<ProcessUssage> processUssages = proccessUssage.GetProcesses();
-
-                foreach (ProcessUssage p in processUssages)
-                {
-                    Console.WriteLine($"{p.id} --- {p.ussage.ToString("0.00")}% --- {p.name} --- {p.ramUssage.ToString("0.00")}MB");
-                }
-
-                Thread.Sleep(2000);
+                Console.WriteLine($"CPU Name is " + name);
             }
 
-            proccessUssage.Stop();
-
-            Thread.Sleep(2000);
+            foreach (string name in info.GetGPUName())
+            {
+                Console.WriteLine($"GPU Name is " + name);
+            }
         }
     }
 }

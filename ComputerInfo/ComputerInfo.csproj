@@ -46,6 +46,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="GetComputerInfo.cs" />
+    <Compile Include="IGetComputerInfo.cs" />
     <Compile Include="InfoWriter.cs" />
     <Compile Include="MRSInfo.cs" />
     <Compile Include="ProccessUssageGetter.cs" />
