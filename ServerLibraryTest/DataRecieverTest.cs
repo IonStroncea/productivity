@@ -13,7 +13,7 @@ namespace ServerLibraryTest
         public void TestRecieveLatest()
         {
             //Arrange
-            DataReciever reciever = new DataReciever(new TestingDataSaver(), new Cache());
+            DataReciever reciever = new DataReciever(new TestingDataSaver(), new Cache(), new ProcessUssageCache());
             MRSInfo info = new MRSInfo();
 
             //Act
@@ -27,7 +27,7 @@ namespace ServerLibraryTest
         public void TestSave()
         {
             //Arrange
-            DataReciever reciever = new DataReciever(new TestingDataSaver(), new Cache());
+            DataReciever reciever = new DataReciever(new TestingDataSaver(), new Cache(), new ProcessUssageCache());
             MRSInfo info = new MRSInfo();
 
             //Act

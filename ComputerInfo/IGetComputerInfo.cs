@@ -12,14 +12,14 @@ namespace Computerinfo
 
         double GetRAMGB();
 
-        double GetCPUFreqGHZ();
+        List<double> GetCPUFreqGHZ();
 
-        double GetCPUFreqMHZ();
+        List<double> GetCPUFreqMHZ();
 
         void RenewData();
 
         List<string> GetCPUName();
 
-        List<String> GetGPUName();
+        List<string> GetGPUName();
     }
 }

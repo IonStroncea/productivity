@@ -1,11 +1,12 @@
-﻿using ComputerInfo;
+﻿using Computerinfo;
+using ComputerInfo;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DAL
+namespace ServerLibrary
 {
     public interface IDataSender
     {
@@ -30,5 +31,7 @@ namespace DAL
         public List<RSInfo> GetAllRSInfoByTypeAndDate(RSInfoType type, int computerId, DateTime startDate, DateTime endtDate);
 
         public List<ProcessUssageInfo> GetLatestUssageInfo(int computerId);
+
+        public List<GetComputerInfo> GetWholeComputersInfo(int userId);
     }
 }

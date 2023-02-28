@@ -1,4 +1,5 @@
 ﻿using Common;
+using Computerinfo;
 using ComputerInfo;
 using DAL;
 using ServerLibrary;
@@ -45,6 +46,16 @@ namespace ServerLibraryTest
         }
 
         public List<RSInfo> GetAllRSInfoByTypeAndDate(RSInfoType type, int computerId, DateTime startDate, DateTime endtDate)
+        {
+            throw new NotImplementedException();
+        }
+
+        public List<ComputerWholeInfo> GetWholeComputersInfo(int userId)
+        {
+            throw new NotImplementedException();
+        }
+
+        List<GetComputerInfo> IDataSource.GetWholeComputersInfo(int userId)
         {
             throw new NotImplementedException();
         }

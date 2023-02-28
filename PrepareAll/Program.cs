@@ -14,12 +14,19 @@ namespace PrepareAll
         public static void Main()
         {
             IGetComputerInfo info = new GetComputerInfo();
+            info.RenewData();
 
             Console.WriteLine(info.GetRAMMB());
-            Console.WriteLine(info.GetCPUFreqMHZ());
+            foreach (double freq in info.GetCPUFreqMHZ())
+            {
+                Console.WriteLine($"CPU freq is " + freq);
+            }
 
             Console.WriteLine(info.GetRAMGB() + " GB");
-            Console.WriteLine(info.GetCPUFreqGHZ() + " GHZ");
+            foreach (double freq in info.GetCPUFreqGHZ())
+            {
+                Console.WriteLine($"CPU freq is " + freq);
+            }
 
             foreach (string name in info.GetCPUName())
             {

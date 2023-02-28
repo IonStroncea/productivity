@@ -1,4 +1,5 @@
-﻿using ComputerInfo;
+﻿using Computerinfo;
+using ComputerInfo;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,5 +18,7 @@ namespace DAL
         List<RSInfo> GetAllRSInfo(int comuterId);
 
         List<RSInfo> GetAllRSInfoByTypeAndDate(RSInfoType type, int computerId, DateTime startDate, DateTime endtDate);
+
+        List<GetComputerInfo> GetWholeComputersInfo(int userId);
     }
 }

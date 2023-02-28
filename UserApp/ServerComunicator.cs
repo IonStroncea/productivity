@@ -8,6 +8,7 @@ using Grpc.Net.Client;
 using Common.GRPCServices;
 using ProtoBuf.Grpc.Client;
 using Common;
+using Computerinfo;
 
 namespace UserApp
 {
@@ -89,6 +90,28 @@ namespace UserApp
                 lock (client)
                 {
                     reply = client.RecieveLatest(message).status;
+                }
+            }
+            catch (Exception e)
+            {
+                return ReturnStatus.Error;
+            }
+
+            return reply;
+        }
+
+        public ReturnStatus RenewComputerInfo(GetComputerInfo info, int computerId)
+        { 
+            ReturnStatus reply =  ReturnStatus.Fail;
+            try
+            {
+                ComputerInfoMessage message = new ComputerInfoMessage();
+                message.computerInfo = info;
+                message.computerId = computerId;
+
+                lock (client)
+                {
+                    reply = client.UpdateComputerInfo(message).status;
                 }
             }
             catch (Exception e)

@@ -2,14 +2,15 @@
 using DAL;
 using ComputerInfo;
 using ProtoBuf.Grpc;
+using Computerinfo;
 
 namespace ServerLibrary
 {
     public class DataReciever : IDataReciever
     {
-        public IDataSaver dataSaver;
-        public ICache cache;
-        public IProccesUssageCache proccesUssageCache;
+        private IDataSaver dataSaver;
+        private ICache cache;
+        private IProccesUssageCache proccesUssageCache;
 
         public DataReciever(IDataSaver dataSaver, ICache cache, IProccesUssageCache proccesUssageCache)
         {
@@ -17,6 +18,14 @@ namespace ServerLibrary
             this.cache = cache;
             this.proccesUssageCache = proccesUssageCache;
         }
+
+        public ReturnStatus RecieveComputerInfo(GetComputerInfo computerInfo, int computerId)
+        {
+            ReturnStatus status = dataSaver.SaveComputerInfo(computerInfo, computerId);
+
+            return status;
+        }
+
         public ReturnStatus RecieveLatest(MRSInfo info, int computerId)
         {
             ReturnStatus status = cache.AddCacheInfo(new CacheInfo(computerId, info));
@@ -32,8 +41,6 @@ namespace ServerLibrary
         public ReturnStatus RecieveLatestUssageInfo(List<ProcessUssageInfo> info, int computerId)
         {
             ReturnStatus status =  proccesUssageCache.AddProccesUssage(info, computerId);
-
-            Console.WriteLine($"Current length {proccesUssageCache.GetSize()}");
 
             return status;
         }

@@ -2,25 +2,50 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Management;
+using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace Computerinfo
 {
+    [DataContract]
     public class GetComputerInfo : IGetComputerInfo
     {
-        private double CPUFreqMHZ;
-        private double RAMMb;
-        private List<string> CPUName;
-        private List<string> GPUName;
+        public string name { get; set; }
+
+        public int userId { get; set; }
+
+        public int computerId { get; set; }
+
+        [DataMember(Order = 2)]
+        public double RAMMb { get; set; }
+
+        [DataMember(Order = 1)]
+        public List<double> CPUFreqMHZ { get; set; }
+
+        [DataMember(Order = 3)]
+        public List<string> CPUName { get; set; }
+        [DataMember(Order = 4)]
+        public List<string> GPUName { get; set; }
 
         public GetComputerInfo()
         {
-            RenewData();
+            
+        }
+
+        public void createData()
+        {
+            CPUFreqMHZ = new List<double>();
+            CPUName = new List<string>();
+            GPUName = new List<string>();
         }
 
         public void RenewData()
         {
+            CPUFreqMHZ = new List<double>();
+            CPUName = new List<string>();
+            GPUName = new List<string>();
+
             ObjectQuery wmi_obj = new ObjectQuery("SELECT * FROM Win32_OperatingSystem");
             ManagementObjectSearcher _findObj = new ManagementObjectSearcher(wmi_obj);
             ManagementObjectCollection _ramInfo = _findObj.Get();
@@ -30,21 +55,17 @@ namespace Computerinfo
                 RAMMb = Convert.ToDouble(_ram["TotalVisibleMemorySize"]) / (1024);
             }
 
-            ManagementObjectSearcher searcher = new ManagementObjectSearcher("select MaxClockSpeed from Win32_Processor");
-            foreach (var item in searcher.Get())
-            {
-                CPUFreqMHZ = (uint)item["MaxClockSpeed"];
-            }
-
             ManagementObjectSearcher mos = new ManagementObjectSearcher("root\\CIMV2", "SELECT * FROM Win32_Processor");
+            CPUFreqMHZ = new List<double>();
             CPUName = new List<string>();
-
             foreach (ManagementObject mo in mos.Get())
             {
-                CPUName.Add((String)mo["Name"]);
+                CPUName.Add((string)mo["Name"]);
+                CPUFreqMHZ.Add((uint)mo["MaxClockSpeed"]);
+                break;
             }
 
-            searcher = new ManagementObjectSearcher("select * from Win32_VideoController");
+            ManagementObjectSearcher searcher = new ManagementObjectSearcher("select * from Win32_VideoController");
             GPUName = new List<string>();
 
             foreach (ManagementObject mo in searcher.Get())
@@ -53,12 +74,16 @@ namespace Computerinfo
             }
         }
 
-        public double GetCPUFreqGHZ()
+        public List<double> GetCPUFreqGHZ()
         {
-            return CPUFreqMHZ / 1000;
+            List<double> result = new List<double>();
+
+            CPUFreqMHZ.ForEach(x => result.Add(x / 1000));
+
+            return result;
         }
 
-        public double GetCPUFreqMHZ()
+        public List<double> GetCPUFreqMHZ()
         {
             return CPUFreqMHZ;
         }

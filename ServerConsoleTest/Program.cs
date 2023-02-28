@@ -15,7 +15,7 @@ namespace ServerConsoleTest
     {
         public static void Main(string[] args)
         {
-            DataSender sender = new DataSender(new DataSource(new ConnectionStringProvider()), new Cache());
+            DataSender sender = new DataSender(new DataSource(new ConnectionStringProvider()), new Cache(), new ProcessUssageCache());
 
             List<RSInfo> infos = sender.GetAllRSInfo(1);
 

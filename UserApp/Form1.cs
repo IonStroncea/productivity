@@ -4,6 +4,8 @@ using System.Collections.Concurrent;
 using System.Reflection.PortableExecutable;
 using System.Timers;
 using System.Net.Http;
+using Computerinfo;
+using Microsoft.VisualBasic.Devices;
 
 namespace UserApp
 {
@@ -14,6 +16,7 @@ namespace UserApp
         bool savedLatest = false;
         private static readonly HttpClient client = new HttpClient();
         string appToken;
+        private GetComputerInfo computerInfo= new GetComputerInfo();
 
         ServerComunicator comunicator = default;
 
@@ -43,7 +46,6 @@ namespace UserApp
 
             lastProccessInfo = proccessUssageGetter.GetProcessesInfo();
 
-            //infos.Enqueue(info);
         }
 
         public void SendLatest()
@@ -192,6 +194,8 @@ namespace UserApp
                         compNameTextBox.Visible = false;
                         newCompCheckBox.Visible = false;
 
+                        RefreshComputerInfoButton.Visible = true;
+
                         sendLabel.Visible = true;
 
                         readAndSendTimer.Start();
@@ -216,7 +220,7 @@ namespace UserApp
                     { "username", userNameTextBox.Text },
                     { "password", passwodTextBox.Text },
                     { "compName", compNameTextBox.Text },
-                    { "newComp", newCompCheckBox.Enabled.ToString() }
+                    { "newComp", newCompCheckBox.Checked.ToString() }
                 };
 
                 string uri = "https://localhost:7155/api/User?" + values.ElementAt(0).Key + "=" + values.ElementAt(0).Value +
@@ -234,6 +238,14 @@ namespace UserApp
             {
                 return "Error";
             }
+
+        }
+
+        private void RefreshComputerInfoButton_Click(object sender, EventArgs e)
+        {
+            computerInfo.RenewData();
+
+            ReturnStatus result = comunicator.RenewComputerInfo(computerInfo, computerId);
 
         }
     }

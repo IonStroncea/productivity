@@ -7,6 +7,7 @@ using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Computerinfo;
 
 namespace DAL
 {
@@ -233,6 +234,108 @@ namespace DAL
             }
 
             return inside;
+        }
+
+        public List<GetComputerInfo> GetWholeComputersInfo(int userId)
+        {
+            List<GetComputerInfo> computers = new List<GetComputerInfo>();
+
+            try
+            {
+                using (SqlConnection con = new SqlConnection(connectionStringProvider.GetConnectionString()))
+                {
+                    con.Open();
+
+                    using (SqlCommand cmd = new SqlCommand("GetAllComputersByUser", con))
+                    {
+                        cmd.CommandType = CommandType.StoredProcedure;
+
+                        cmd.Parameters.Add("@userId", SqlDbType.Int).Value = userId;
+
+                        using (SqlDataAdapter da = new SqlDataAdapter(cmd))
+                        {
+                            DataSet ds = new DataSet();
+                            da.Fill(ds, "result_name");
+
+                            DataTable dt = ds.Tables["result_name"];
+
+                            foreach (DataRow row in dt.Rows)
+                            {
+                                GetComputerInfo computerWholeInfo = new GetComputerInfo();
+                                computerWholeInfo.computerId = Convert.ToInt32(row["id"]);
+                                computerWholeInfo.name = Convert.ToString(row["computerName"]);
+                                computerWholeInfo.userId = userId;
+                                computerWholeInfo.createData();
+
+                                computers.Add(computerWholeInfo);
+                            }
+                        }                        
+                    }
+
+                    foreach (GetComputerInfo computer in computers)
+                    {
+                        SqlCommand cmd = new SqlCommand("GetCPUByComputerId", con);
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        cmd.Parameters.Add("@computerId", SqlDbType.Int).Value = computer.computerId;
+
+                        using (SqlDataAdapter da = new SqlDataAdapter(cmd))
+                        {
+                            DataSet ds = new DataSet();
+                            da.Fill(ds, "result_name");
+
+                            DataTable dt = ds.Tables["result_name"];
+
+                            foreach (DataRow row in dt.Rows)
+                            {
+                                computer.CPUName.Add(Convert.ToString(row["CPUName"]));
+                                computer.CPUFreqMHZ.Add(Convert.ToDouble(row["CPUFreq"]));
+                            }
+                        }
+
+                        cmd = new SqlCommand("GetGPUByComputerId", con);
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        cmd.Parameters.Add("@computerId", SqlDbType.Int).Value = computer.computerId;
+
+                        using (SqlDataAdapter da = new SqlDataAdapter(cmd))
+                        {
+                            DataSet ds = new DataSet();
+                            da.Fill(ds, "result_name");
+
+                            DataTable dt = ds.Tables["result_name"];
+
+                            foreach (DataRow row in dt.Rows)
+                            {
+                                computer.GPUName.Add(Convert.ToString(row["GPUName"]));
+                            }
+                        }
+
+                        cmd = new SqlCommand("GetRamByComputerId", con);
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        cmd.Parameters.Add("@computerId", SqlDbType.Int).Value = computer.computerId;
+
+                        using (SqlDataAdapter da = new SqlDataAdapter(cmd))
+                        {
+                            DataSet ds = new DataSet();
+                            da.Fill(ds, "result_name");
+
+                            DataTable dt = ds.Tables["result_name"];
+
+                            foreach (DataRow row in dt.Rows)
+                            {
+                                computer.RAMMb = Convert.ToDouble(row["valueMB"]);
+                            }
+                        }
+                    }
+
+                    con.Close();
+                }
+            }
+            catch (Exception ex)
+            {
+                return computers;
+            }
+
+            return computers;
         }
     }
 }

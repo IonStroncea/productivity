@@ -8,6 +8,7 @@ using ProtoBuf.Grpc;
 using System.Runtime.Serialization;
 using System.ServiceModel;
 using System.Threading.Tasks;
+using Computerinfo;
 
 namespace ServerLibrary
 {
@@ -20,5 +21,7 @@ namespace ServerLibrary
         public ReturnStatus Save(RSInfo info, int computerId);
 
         public ReturnStatus RecieveLatestUssageInfo(List<ProcessUssageInfo> info, int computerId);
+
+        public ReturnStatus RecieveComputerInfo(GetComputerInfo computerInfo, int computerId);
     }
 }

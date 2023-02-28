@@ -18,7 +18,6 @@ namespace Server
             // Add services to the container.
 
             builder.Services.AddControllers();
-            // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
             builder.Services.AddCodeFirstGrpc();
@@ -32,6 +31,7 @@ namespace Server
             builder.Services.AddScoped<IDataSender, DataSender>();
             builder.Services.AddSingleton<ILogin, UserLogin>();
             builder.Services.AddSingleton<IUserDataSource, UserDataSource>();
+            builder.Services.AddSingleton<IComputerDAL, ComputerDAL>();
 
             builder.Services.AddCors(options =>
             {
@@ -57,7 +57,6 @@ namespace Server
 
             app.UseWebSockets();
 
-            
             app.UseHttpsRedirection();
 
             app.UseAuthorization();

@@ -1,0 +1,42 @@
+﻿@page
+@model WebSite.Pages.MyComputersModel
+@{
+}
+
+@foreach (var computer in Model.computers)
+{
+<div class="bg-light">
+    <div style="min-height: 50px;"></div>
+    <h2>Computer name:</h2>
+        <h5>@computer.name</h5>
+
+    <div style="min-height: 30px;"></div>
+
+    <div class="row">
+        <div class="col">
+            @for (int x = 0; x < computer.GetCPUName().Count; x++)
+            {
+                <h4>CPU name:</h4>
+                <h5>@computer.GetCPUName()[x]</h5>
+                <h4>CPU speed:</h4>
+                <h5>@computer.GetCPUFreqGHZ()[x]</h5>
+            }
+        </div>
+        <div class="col">
+            <h4>Total RAM:</h4>
+            <h5>@computer.GetRAMGB()</h5>
+            @foreach(var GPU in computer.GetGPUName())
+            {
+                <h4>GPU name:</h4>
+                <h5>@GPU</h5>
+            }
+        </div>
+    </div>
+    <div>
+        <form method="post">
+        <button type="submit" asp-page-handler="delete" asp-route-id="@computer.computerId">Delete</button>
+    </form>
+    </div>
+</div>
+<br>
+}

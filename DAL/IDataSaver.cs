@@ -1,4 +1,5 @@
 ﻿using Common;
+using Computerinfo;
 using ComputerInfo;
 using System;
 using System.Collections.Generic;
@@ -13,5 +14,7 @@ namespace DAL
         ReturnStatus SaveMRSInfo(MRSInfo info, int computerId);
 
         ReturnStatus SaveRSInfo(RSInfo info, int computerId);
+
+        ReturnStatus SaveComputerInfo(GetComputerInfo computerInfo, int computerId);
     }
 }

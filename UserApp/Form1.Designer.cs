@@ -51,6 +51,7 @@
             this.compNameLabel = new System.Windows.Forms.Label();
             this.compNameTextBox = new System.Windows.Forms.TextBox();
             this.newCompCheckBox = new System.Windows.Forms.CheckBox();
+            this.RefreshComputerInfoButton = new System.Windows.Forms.Button();
             this.iconMenu.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -229,11 +230,23 @@
             this.newCompCheckBox.Text = "New computer";
             this.newCompCheckBox.UseVisualStyleBackColor = true;
             // 
+            // RefreshComputerInfoButton
+            // 
+            this.RefreshComputerInfoButton.Location = new System.Drawing.Point(152, 206);
+            this.RefreshComputerInfoButton.Name = "RefreshComputerInfoButton";
+            this.RefreshComputerInfoButton.Size = new System.Drawing.Size(75, 23);
+            this.RefreshComputerInfoButton.TabIndex = 16;
+            this.RefreshComputerInfoButton.Text = "Refresh";
+            this.RefreshComputerInfoButton.UseVisualStyleBackColor = true;
+            this.RefreshComputerInfoButton.Visible = false;
+            this.RefreshComputerInfoButton.Click += new System.EventHandler(this.RefreshComputerInfoButton_Click);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(437, 268);
+            this.Controls.Add(this.RefreshComputerInfoButton);
             this.Controls.Add(this.newCompCheckBox);
             this.Controls.Add(this.compNameTextBox);
             this.Controls.Add(this.compNameLabel);
@@ -282,5 +295,6 @@
         private Label compNameLabel;
         private TextBox compNameTextBox;
         private CheckBox newCompCheckBox;
+        private Button RefreshComputerInfoButton;
     }
 }

@@ -1,4 +1,5 @@
 ﻿using Common;
+using Computerinfo;
 using ComputerInfo;
 using DAL;
 using System;
@@ -11,6 +12,11 @@ namespace ServerLibraryTest
 {
     public class TestingDataSaver : IDataSaver
     {
+        public ReturnStatus SaveComputerInfo(GetComputerInfo computerInfo, int computerId)
+        {
+            throw new NotImplementedException();
+        }
+
         public ReturnStatus SaveMRSInfo(MRSInfo info, int computerId)
         {
             return ReturnStatus.Success;

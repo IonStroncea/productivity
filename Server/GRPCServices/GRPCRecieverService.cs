@@ -40,5 +40,12 @@ namespace Server.GRPCServices
 
             return new RecieveMessageResult(dataReciever.Save(info.info, info.computerId));
         }
+
+        public RecieveMessageResult UpdateComputerInfo(ComputerInfoMessage info)
+        {
+            Console.WriteLine($"Update computer info from computer: {info.computerId}");
+
+            return new RecieveMessageResult(dataReciever.RecieveComputerInfo(info.computerInfo, info.computerId));
+        }
     }
 }

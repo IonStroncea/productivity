@@ -21,5 +21,8 @@ namespace Common.GRPCServices
 
         [OperationContract]
         public RecieveMessageResult RecieveLatestUssageInfo(UssageInfoMessage info);
+
+        [OperationContract]
+        public RecieveMessageResult UpdateComputerInfo(ComputerInfoMessage info);
     }
 }

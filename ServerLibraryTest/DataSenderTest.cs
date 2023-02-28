@@ -17,7 +17,7 @@ namespace ServerLibraryTest
         public void TestGetAllMRSInfo()
         {
             //Arrange
-            DataSender sender = new DataSender(new TestingDataSource(), new Cache());
+            DataSender sender = new DataSender(new TestingDataSource(), new Cache(), new ProcessUssageCache());
 
             //Act
             List<MRSInfo> result = sender.GetAllMRSInfo(1);
@@ -31,7 +31,7 @@ namespace ServerLibraryTest
         public void TestGetAllRSInfoGyType()
         {
             //Arrange
-            DataSender sender = new DataSender(new TestingDataSource(), new Cache());
+            DataSender sender = new DataSender(new TestingDataSource(), new Cache(), new ProcessUssageCache());
             RSInfoType type = RSInfoType.CPU;
 
             //Act
@@ -46,7 +46,7 @@ namespace ServerLibraryTest
         public void TestAllRSInfo()
         {
             //Arrange
-            DataSender sender = new DataSender(new TestingDataSource(), new Cache());
+            DataSender sender = new DataSender(new TestingDataSource(), new Cache(), new ProcessUssageCache());
 
             //Act
             List<RSInfo> result = sender.GetAllRSInfo(1);
@@ -61,8 +61,9 @@ namespace ServerLibraryTest
         {
             //Arrange
             Cache cache = new Cache();
-            DataSender sender = new DataSender(new TestingDataSource(), cache);
-            DataReciever reciever = new DataReciever(new TestingDataSaver(), cache);
+            ProcessUssageCache pCahce = new ProcessUssageCache();
+            DataSender sender = new DataSender(new TestingDataSource(), cache, pCahce);
+            DataReciever reciever = new DataReciever(new TestingDataSaver(), cache, pCahce);
 
             MRSInfo info = new MRSInfo();
 

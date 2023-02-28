@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Common;
+using Computerinfo;
 using ComputerInfo;
 using DAL;
 
@@ -132,6 +133,11 @@ namespace ServerLibrary
                 return proccesUssage.GetLatest(computerId);
             }
             return new List<ProcessUssageInfo>();
+        }
+
+        public List<GetComputerInfo> GetWholeComputersInfo(int userId)
+        {
+            return dataSource.GetWholeComputersInfo(userId);
         }
     }
 }

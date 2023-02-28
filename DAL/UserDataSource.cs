@@ -31,8 +31,8 @@ namespace DAL
                 using (SqlCommand cmd = new SqlCommand("Create_Comp", conn))
                 {
                     cmd.CommandType = CommandType.StoredProcedure;
-                    cmd.Parameters.Add("@compName", SqlDbType.Char, 100).Value = userId;
-                    cmd.Parameters.Add("@userId", SqlDbType.Int).Value = compName;
+                    cmd.Parameters.Add("@compName", SqlDbType.Char, 100).Value = compName;
+                    cmd.Parameters.Add("@userId", SqlDbType.Int).Value = userId;
                     cmd.Parameters.Add("@compId", SqlDbType.Int).Direction = ParameterDirection.Output;
 
                     try
@@ -49,7 +49,7 @@ namespace DAL
                     }
                 }
 
-                return userId;
+                return compId;
             }
             catch (Exception e)
             {
