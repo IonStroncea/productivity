@@ -14,10 +14,10 @@ namespace WebSite.Pages
 
         public IActionResult OnGet()
         {
-            if (HttpContext.Session.Get("userId") == null)
+/*            if (HttpContext.Session.Get("userId") == null)
             {
                 return Redirect("/LogIn");
-            }
+            }*/
             return Page();
         }
     }
