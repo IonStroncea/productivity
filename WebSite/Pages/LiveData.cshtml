@@ -62,11 +62,19 @@
 </script>
 <script>
     var ws;
+    var typeData;
+    var computerId;
+    var userId = '@httpContextaccessor.HttpContext.Session.GetInt32("userId")';
+
+
     $(document).ready(function () {  
         for (let i = 0; i < 100; i++) {
             xValues.push(0);     
             yValues.push(0);
         }
+
+        typeData = document.getElementById("typeData").value;
+        computerId = document.getElementById("computerId").value;
 
         redraw();
         ws = CreateSocket();
@@ -74,6 +82,9 @@
 
     function recreateSocket()
     {
+        typeData = document.getElementById("typeData").value;
+        computerId = document.getElementById("computerId").value;
+
         xValues = [];
         yValues = [];
 
@@ -91,7 +102,7 @@
 
         ws.onopen = function()
         {
-            ws.send(document.getElementById("typeData").value + "+" + document.getElementById("computerId").value + "+" + '@httpContextaccessor.HttpContext.Session.GetInt32("userId")');
+            ws.send(typeData + "+" + computerId + "+" + '@httpContextaccessor.HttpContext.Session.GetInt32("userId")');
         }
 
         ws.onmessage = function(evt)
@@ -103,8 +114,8 @@
 
             xValues.push(recieved_msg.date);      
             yValues.push(recieved_msg.usage);
-            
-            ws.send(document.getElementById("typeData").value + "+" + document.getElementById("computerId").value + "+" + '@httpContextaccessor.HttpContext.Session.GetInt32("userId")');
+
+            ws.send(typeData + "+" + computerId + "+" + '@httpContextaccessor.HttpContext.Session.GetInt32("userId")');
 
             redraw();
         }
@@ -112,11 +123,12 @@
         ws.onclose = function (event){
             if(event.wasClean)
             {
-                console.log("Connection closed");
+                //console.log("Connection closed");
             }
             else
             {
-                console.log("Connection killed");
+                alert('Connection error');
+                //console.log("Connection killed");
             }
         };
 
