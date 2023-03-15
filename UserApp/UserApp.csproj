@@ -10,6 +10,7 @@
 
   <ItemGroup>
     <PackageReference Include="Grpc.Net.Client" Version="2.51.0" />
+    <PackageReference Include="Newtonsoft.Json" Version="10.0.3" />
     <PackageReference Include="protobuf-net.Grpc" Version="1.0.179" />
     <PackageReference Include="System.Diagnostics.PerformanceCounter" Version="7.0.0" />
     <PackageReference Include="System.Management" Version="7.0.0" />

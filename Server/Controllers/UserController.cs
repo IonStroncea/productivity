@@ -17,8 +17,8 @@ namespace Server.Controllers
             this.userData = userData;
         }
 
-        [HttpGet]
-        public string LogIn(string username, string password, string compName, string newComp)
+        [HttpGet("/logInComputer")]
+        public string LogInWith(string username, string password, string compName, string newComp)
         {
             int userId = userLogin.Login(username, password);
             int compId = 0;
@@ -38,6 +38,19 @@ namespace Server.Controllers
             }
 
             return "Error";
+        }
+
+        [HttpGet]
+        public Dictionary<int, string> LogIn(string username, string password)
+        {
+            int userId = userLogin.Login(username, password);
+
+            if (userId != -1)
+            {
+                return userData.GetAllComputers(userId);
+            }
+
+            return null;
         }
     }
 }
