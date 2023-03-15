@@ -52,6 +52,8 @@
             this.compNameTextBox = new System.Windows.Forms.TextBox();
             this.newCompCheckBox = new System.Windows.Forms.CheckBox();
             this.RefreshComputerInfoButton = new System.Windows.Forms.Button();
+            this.computersListComboBox = new System.Windows.Forms.ComboBox();
+            this.selectComputerButton = new System.Windows.Forms.Button();
             this.iconMenu.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -196,7 +198,7 @@
             // 
             // loginButton
             // 
-            this.loginButton.Location = new System.Drawing.Point(26, 206);
+            this.loginButton.Location = new System.Drawing.Point(26, 146);
             this.loginButton.Name = "loginButton";
             this.loginButton.Size = new System.Drawing.Size(75, 23);
             this.loginButton.TabIndex = 12;
@@ -207,28 +209,32 @@
             // compNameLabel
             // 
             this.compNameLabel.AutoSize = true;
-            this.compNameLabel.Location = new System.Drawing.Point(26, 134);
+            this.compNameLabel.Location = new System.Drawing.Point(272, 90);
             this.compNameLabel.Name = "compNameLabel";
             this.compNameLabel.Size = new System.Drawing.Size(96, 15);
             this.compNameLabel.TabIndex = 13;
             this.compNameLabel.Text = "Computer Name";
+            this.compNameLabel.Visible = false;
             // 
             // compNameTextBox
             // 
-            this.compNameTextBox.Location = new System.Drawing.Point(26, 152);
+            this.compNameTextBox.Location = new System.Drawing.Point(272, 108);
             this.compNameTextBox.Name = "compNameTextBox";
             this.compNameTextBox.Size = new System.Drawing.Size(100, 23);
             this.compNameTextBox.TabIndex = 14;
+            this.compNameTextBox.Visible = false;
             // 
             // newCompCheckBox
             // 
             this.newCompCheckBox.AutoSize = true;
-            this.newCompCheckBox.Location = new System.Drawing.Point(26, 181);
+            this.newCompCheckBox.Location = new System.Drawing.Point(272, 137);
             this.newCompCheckBox.Name = "newCompCheckBox";
             this.newCompCheckBox.Size = new System.Drawing.Size(105, 19);
             this.newCompCheckBox.TabIndex = 15;
             this.newCompCheckBox.Text = "New computer";
             this.newCompCheckBox.UseVisualStyleBackColor = true;
+            this.newCompCheckBox.Visible = false;
+            this.newCompCheckBox.CheckedChanged += new System.EventHandler(this.newCompCheckBox_CheckedChanged);
             // 
             // RefreshComputerInfoButton
             // 
@@ -241,11 +247,34 @@
             this.RefreshComputerInfoButton.Visible = false;
             this.RefreshComputerInfoButton.Click += new System.EventHandler(this.RefreshComputerInfoButton_Click);
             // 
+            // computersListComboBox
+            // 
+            this.computersListComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.computersListComboBox.FormattingEnabled = true;
+            this.computersListComboBox.Location = new System.Drawing.Point(272, 50);
+            this.computersListComboBox.Name = "computersListComboBox";
+            this.computersListComboBox.Size = new System.Drawing.Size(121, 23);
+            this.computersListComboBox.TabIndex = 17;
+            this.computersListComboBox.Visible = false;
+            // 
+            // selectComputerButton
+            // 
+            this.selectComputerButton.Location = new System.Drawing.Point(272, 171);
+            this.selectComputerButton.Name = "selectComputerButton";
+            this.selectComputerButton.Size = new System.Drawing.Size(75, 23);
+            this.selectComputerButton.TabIndex = 18;
+            this.selectComputerButton.Text = "Select";
+            this.selectComputerButton.UseVisualStyleBackColor = true;
+            this.selectComputerButton.Visible = false;
+            this.selectComputerButton.Click += new System.EventHandler(this.selectComputerButton_Click);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(437, 268);
+            this.Controls.Add(this.selectComputerButton);
+            this.Controls.Add(this.computersListComboBox);
             this.Controls.Add(this.RefreshComputerInfoButton);
             this.Controls.Add(this.newCompCheckBox);
             this.Controls.Add(this.compNameTextBox);
@@ -296,5 +325,7 @@
         private TextBox compNameTextBox;
         private CheckBox newCompCheckBox;
         private Button RefreshComputerInfoButton;
+        private ComboBox computersListComboBox;
+        private Button selectComputerButton;
     }
 }

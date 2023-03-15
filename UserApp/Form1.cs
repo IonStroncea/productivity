@@ -1,16 +1,15 @@
 using Common;
 using ComputerInfo;
 using System.Collections.Concurrent;
-using System.Reflection.PortableExecutable;
-using System.Timers;
-using System.Net.Http;
 using Computerinfo;
-using Microsoft.VisualBasic.Devices;
+using Newtonsoft.Json;
 
 namespace UserApp
 {
     public partial class MainForm : Form
     {
+        string username = "";
+        string password = "";
         int computerId = 0;
         bool _closeApp = false;
         bool savedLatest = false;
@@ -229,34 +228,33 @@ namespace UserApp
 
         private void loginButton_Click(object sender, EventArgs e)
         {
-            Thread t1 = new Thread(() => { 
-                string token = LogIn().Result;
+            Thread t1 = new Thread(() =>
+            {
+                Dictionary<int, string> computers = LogIn().Result;
 
-                Invoke((MethodInvoker)delegate {
-                    if (token != "Error")
+                Invoke((MethodInvoker)delegate
+                {
+
+                    if (computers != null)
                     {
-                        computerId = Int32.Parse(token.Split("==")[3]);
-
-                        appToken = token;
-                        userNameLabel.Visible = false;
-                        userNameTextBox.Visible = false;
-
-                        passwordLabel.Visible = false;
-                        passwodTextBox.Visible = false;
-
-                        loginButton.Visible = false;
-
-                        compNameLabel.Visible = false;
-                        compNameTextBox.Visible = false;
-                        newCompCheckBox.Visible = false;
-
-                        RefreshComputerInfoButton.Visible = true;
-
-                        sendLabel.Visible = true;
-
-                        readAndSendTimer.Start();
-                        sendLatestMRSInfoTimer.Start();
+                        foreach (var computer in computers)
+                        {
+                            computersListComboBox.Items.Add(computer.Value);
+                        }
                     }
+
+                    computersListComboBox.Visible = true;
+
+                    newCompCheckBox.Visible = true;
+                    selectComputerButton.Visible = true;
+
+                    userNameLabel.Visible = false;
+                    userNameTextBox.Visible = false;
+
+                    passwordLabel.Visible = false;
+                    passwodTextBox.Visible = false;
+
+                    loginButton.Visible = false;
                 });
             });
             t1.Start();
@@ -267,23 +265,72 @@ namespace UserApp
         {
         }
 
-        private async Task<string> LogIn()
+        private async Task<Dictionary<int, string>> LogIn()
         {
             try
             {
                 var values = new Dictionary<string, string>
                 {
                     { "username", userNameTextBox.Text },
-                    { "password", passwodTextBox.Text },
-                    { "compName", compNameTextBox.Text },
-                    { "newComp", newCompCheckBox.Checked.ToString() }
+                    { "password", passwodTextBox.Text }
                 };
 
                 string uri = "https://localhost:7155/api/User?" + values.ElementAt(0).Key + "=" + values.ElementAt(0).Value +
-                                                                "&" + values.ElementAt(1).Key + "=" + values.ElementAt(1).Value +
-                                                                "&" + values.ElementAt(2).Key + "=" + values.ElementAt(2).Value +
-                                                                "&" + values.ElementAt(3).Key + "=" + values.ElementAt(3).Value;
+                                                          "&" + values.ElementAt(1).Key + "=" + values.ElementAt(1).Value;
 
+                var response = await client.GetAsync(uri);
+
+                var text = response.Content.ReadAsStringAsync().Result;
+
+                username = userNameTextBox.Text;
+                password = passwodTextBox.Text;
+
+                Dictionary<int, string> result = JsonConvert.DeserializeObject<Dictionary<int, string>>(text);
+
+                return result;
+
+            }
+            catch (Exception e)
+            {
+                return null;
+            }
+        }
+
+        private async Task<string> LogInWithComputer()
+        {
+            try
+            {
+                var values = new Dictionary<string, string>();
+
+                if (!newCompCheckBox.Checked)
+                {
+                    Invoke((MethodInvoker)delegate
+                    {
+                        values = new Dictionary<string, string>
+                    {
+                        { "username", username },
+                        { "password", password },
+                        { "compName", computersListComboBox.SelectedItem.ToString() },
+                        { "newComp", newCompCheckBox.Checked.ToString() }
+                    };
+                    });
+                }
+                else
+                {
+                    values = new Dictionary<string, string>
+                    {
+                        { "username", userNameTextBox.Text },
+                        { "password", passwodTextBox.Text },
+                        { "compName", compNameTextBox.Text },
+                        { "newComp", newCompCheckBox.Checked.ToString() }
+                    };
+
+                    
+                }
+                string uri = "https://localhost:7155/logInComputer?" + values.ElementAt(0).Key + "=" + values.ElementAt(0).Value +
+                                                                    "&" + values.ElementAt(1).Key + "=" + values.ElementAt(1).Value +
+                                                                    "&" + values.ElementAt(2).Key + "=" + values.ElementAt(2).Value +
+                                                                    "&" + values.ElementAt(3).Key + "=" + values.ElementAt(3).Value;
                 var response = await client.GetAsync(uri);
 
                 var text = response.Content.ReadAsStringAsync().Result;
@@ -303,6 +350,53 @@ namespace UserApp
 
             ReturnStatus result = comunicator.RenewComputerInfo(computerInfo, computerId);
 
+        }
+
+        private void selectComputerButton_Click(object sender, EventArgs e)
+        {
+            Thread t1 = new Thread(() =>
+            {
+                string token = LogInWithComputer().Result;
+                Invoke((MethodInvoker)delegate {
+                if (token != "Error")
+                {
+                    computerId = Int32.Parse(token.Split("==")[3]);
+
+                    appToken = token;
+
+                    compNameLabel.Visible = false;
+                    compNameTextBox.Visible = false;
+                    newCompCheckBox.Visible = false;
+                    RefreshComputerInfoButton.Visible = false;
+                    selectComputerButton.Visible = false;
+                    computersListComboBox.Visible = false;
+
+                    RefreshComputerInfoButton.Visible = true;
+
+                    sendLabel.Visible = true;
+
+                    readAndSendTimer.Start();
+                    sendLatestMRSInfoTimer.Start();
+                }
+                });
+            });
+            t1.Start();
+        }
+
+        private void newCompCheckBox_CheckedChanged(object sender, EventArgs e)
+        {
+            if (newCompCheckBox.Checked)
+            {
+                computersListComboBox.Visible = false;
+                compNameLabel.Visible = true;
+                compNameTextBox.Visible = true;
+            }
+            else 
+            {
+                computersListComboBox.Visible = true;
+                compNameLabel.Visible = false;
+                compNameTextBox.Visible = false;
+            }
         }
     }
 }
