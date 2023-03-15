@@ -17,6 +17,7 @@ namespace UserApp
         private static readonly HttpClient client = new HttpClient();
         string appToken;
         private GetComputerInfo computerInfo= new GetComputerInfo();
+        bool shouldWork = true;
 
         ServerComunicator comunicator = default;
 
@@ -59,7 +60,13 @@ namespace UserApp
                 savedLatest = true;
             }
 
-            Invoke((MethodInvoker)delegate { sendLabel.Text = $"Tansmited {sentData} data {remainData} reamining"; });
+            try
+            {
+                Invoke((MethodInvoker)delegate { sendLabel.Text = $"Tansmited {sentData} data {remainData} reamining"; });
+            }
+            catch
+            { 
+            }
         }
 
         public void WriteInfosToFile()
@@ -117,11 +124,27 @@ namespace UserApp
 
             InitializeComponent();
 
-            getSystemInfoTimer = new Thread(() => { while (appRunning) { Thread.Sleep(1000); GetSystemInfo();} });
-            changeLabelsTimer = new Thread(() => { while (appRunning) { Thread.Sleep(1500); ChangeLabels();} });
-            writeInfosToFileTimer = new Thread(() => { while (appRunning) { Thread.Sleep(1500); WriteInfosToFile();} });
-            readAndSendTimer = new Thread(() => { while (appRunning) { Thread.Sleep(1000); ReadAndSend();} });
-            sendLatestMRSInfoTimer = new Thread(() => { while (appRunning) { Thread.Sleep(1000); SendLatest(); } });
+            getSystemInfoTimer = new Thread(() => { while (appRunning) { Thread.Sleep(1000); if(shouldWork) GetSystemInfo();} });
+            changeLabelsTimer = new Thread(() => { 
+                while (appRunning) 
+                { 
+                    Thread.Sleep(3000);
+                    if (shouldWork)
+                    {
+                        try
+                        {
+                            ChangeLabels();
+                        }
+                        catch (Exception e)
+                        {
+                            continue;
+                        }
+                    }
+                } 
+            });
+            writeInfosToFileTimer = new Thread(() => { while (appRunning) { Thread.Sleep(1500); if (shouldWork) WriteInfosToFile();} });
+            readAndSendTimer = new Thread(() => { while (appRunning) { Thread.Sleep(1000); if (shouldWork) ReadAndSend();} });
+            sendLatestMRSInfoTimer = new Thread(() => { while (appRunning) { Thread.Sleep(1000); if (shouldWork) SendLatest(); } });
 
             getSystemInfoTimer.Start();
             writeInfosToFileTimer.Start();
@@ -145,6 +168,27 @@ namespace UserApp
             else
             {
                 appRunning = false;
+                proccessUssageGetter.Stop();
+                if (getSystemInfoTimer != null && getSystemInfoTimer.IsAlive)
+                {
+                    getSystemInfoTimer.Join();
+                }
+                if (changeLabelsTimer != null && changeLabelsTimer.IsAlive)
+                {
+
+                }
+                if (writeInfosToFileTimer != null && writeInfosToFileTimer.IsAlive)
+                {
+                    writeInfosToFileTimer.Join();
+                }
+                if (readAndSendTimer != null && readAndSendTimer.IsAlive)
+                {
+                    readAndSendTimer.Join();
+                }
+                if (sendLatestMRSInfoTimer != null && sendLatestMRSInfoTimer.IsAlive)
+                {
+
+                }
             }
         }
 
@@ -168,6 +212,18 @@ namespace UserApp
                 Show();
 
                 return;
+            }
+
+            if (e.ClickedItem.Name == "Pause")
+            {
+                proccessUssageGetter.Pause();
+                shouldWork = false;
+            }
+
+            if (e.ClickedItem.Name == "Resume")
+            {
+                proccessUssageGetter.Restart();
+                shouldWork = true;
             }
         }
 

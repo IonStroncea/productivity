@@ -112,6 +112,16 @@ namespace ComputerInfo
             t1.Join();
         }
 
+        public void Pause()
+        {
+            run = false;
+        }
+
+        public void Restart()
+        {
+            run = true;
+        }
+
         public List<ProcessUssage> GetProcesses() 
         {
             return new List<ProcessUssage>(processes);
