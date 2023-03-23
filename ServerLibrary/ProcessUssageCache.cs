@@ -4,6 +4,7 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography.Xml;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -11,7 +12,23 @@ namespace ServerLibrary
 {
     public class ProcessUssageCache : IProccesUssageCache
     {
-        private BlockingCollection<KeyValuePair<int,List<ProcessUssageInfo>>> cq = new BlockingCollection<KeyValuePair<int, List<ProcessUssageInfo>>>();
+        private BlockingCollection<Tuple <int,List<ProcessUssageInfo>, DateTime>> cq = new BlockingCollection<Tuple<int, List<ProcessUssageInfo>, DateTime>>();
+        private Thread clearValues;
+        private bool clearValuesWork = true;
+        private TimeSpan liveTime = TimeSpan.FromSeconds(3);
+
+        public ProcessUssageCache()
+        {
+            clearValues = new Thread(() => {
+                while (clearValuesWork)
+                {
+                    ClearValues();
+                    Thread.Sleep(500);
+                }
+            });
+
+            clearValues.Start();
+        }
 
         public ReturnStatus AddProccesUssage(List<ProcessUssageInfo> info, int computerId)
         {
@@ -19,23 +36,23 @@ namespace ServerLibrary
             {
                 lock (cq)
                 {
-                    List<KeyValuePair<int, List<ProcessUssageInfo>>> cacheInfos = cq.ToList();
+                    List<Tuple<int, List<ProcessUssageInfo>, DateTime>> cacheInfos = cq.ToList();
 
-                    if (cacheInfos.Any(x => x.Key == computerId))
+                    if (cacheInfos.Any(x => x.Item1 == computerId))
                     {
                         cq.Dispose();
-                        cq = new BlockingCollection<KeyValuePair<int, List<ProcessUssageInfo>>>();
-                        KeyValuePair<int, List<ProcessUssageInfo>> toDelete = cacheInfos.First(x => x.Key == computerId);
+                        cq = new BlockingCollection<Tuple<int, List<ProcessUssageInfo>, DateTime>>();
+                        Tuple<int, List<ProcessUssageInfo>, DateTime> toDelete = cacheInfos.First(x => x.Item1 == computerId);
 
                         cacheInfos.Remove(toDelete);
 
-                        KeyValuePair<int, List<ProcessUssageInfo>> toAdd = new KeyValuePair<int, List<ProcessUssageInfo>>(computerId, info);
+                        Tuple<int, List<ProcessUssageInfo>, DateTime> toAdd = new Tuple<int, List<ProcessUssageInfo>, DateTime>(computerId, info, DateTime.UtcNow);
                         cacheInfos.Add(toAdd);
                         cacheInfos.ForEach(x => cq.Add(x));
                     }
                     else
                     {
-                        cq.Add(new KeyValuePair<int, List<ProcessUssageInfo>>(computerId, info));
+                        cq.Add(new Tuple<int, List<ProcessUssageInfo>, DateTime>(computerId, info, DateTime.UtcNow));
                     }
                 }
                 return ReturnStatus.Success;
@@ -50,9 +67,38 @@ namespace ServerLibrary
         {
             lock (cq)
             {
-                KeyValuePair<int, List<ProcessUssageInfo>> info = cq.First(x => x.Key == comuterId);
+                Tuple<int, List<ProcessUssageInfo>, DateTime> info = cq.First(x => x.Item1 == comuterId);
 
-                return info.Value;
+                return info.Item2;
+            }
+        }
+
+        ~ProcessUssageCache()
+        {
+            clearValuesWork = false;
+
+            if (clearValues != null && clearValues.IsAlive)
+            {
+                clearValues.Join();
+            }
+        }
+
+        private void ClearValues()
+        {
+            lock (cq)
+            {
+                List<Tuple<int, List<ProcessUssageInfo>, DateTime>> processInfos = cq.ToList();
+
+                cq.Dispose();
+                cq = new BlockingCollection<Tuple<int, List<ProcessUssageInfo>, DateTime>>();
+
+                foreach (var item in processInfos)
+                {
+                    if (item.Item3.Add(liveTime).CompareTo(DateTime.UtcNow) > 0)
+                    {
+                        cq.Add(item);
+                    }
+                }
             }
         }
 
@@ -60,7 +106,7 @@ namespace ServerLibrary
         {
             lock (cq)
             {
-                bool contains = cq.Where(x => x.Key == coputerId).Count() > 0;
+                bool contains = cq.Where(x => x.Item1 == coputerId).Count() > 0;
                 return contains;
             }
         }
