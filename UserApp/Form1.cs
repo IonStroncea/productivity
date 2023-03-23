@@ -148,7 +148,7 @@ namespace UserApp
             getSystemInfoTimer.Start();
             writeInfosToFileTimer.Start();
             changeLabelsTimer.Start();
-
+            sendLatestMRSInfoTimer.Start();
 
         }
 
@@ -376,7 +376,7 @@ namespace UserApp
                     sendLabel.Visible = true;
 
                     readAndSendTimer.Start();
-                    sendLatestMRSInfoTimer.Start();
+                    
                 }
                 });
             });
