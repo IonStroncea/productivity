@@ -96,8 +96,10 @@
 
     function CreateSocket()
     {
+        var address = '@Model.server';
+        address = address.replace('https', '');
         var scheme = document.location.protocol == "https:" ?"wss" : "ws";
-        var url = '' + scheme + '://localhost:7155/api/LiveData';
+        var url = '' + scheme + address + '/api/LiveData';
         var ws = new WebSocket(url);
 
         ws.onopen = function()

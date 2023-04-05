@@ -20,6 +20,7 @@ namespace WebSite
             builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             builder.Services.AddSingleton<IRegister, UserRegister>();
             builder.Services.AddSingleton<IUserDataSource, UserDataSource>();
+            builder.Services.AddSingleton<ServerConnectionString>();
 
             builder.Services.AddSession(options =>
             {

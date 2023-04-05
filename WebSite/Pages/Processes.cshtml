@@ -58,7 +58,7 @@
 
     var GetCharData = function () {
         $.ajax({
-            url: 'https://localhost:7155/api/ProcessesLastValue',
+            url: '@Model.server/api/ProcessesLastValue',
             data: {
                 computerId: document.getElementById("computerId").value,
                 userId: '@httpContextaccessor.HttpContext.Session.GetInt32("userId")',

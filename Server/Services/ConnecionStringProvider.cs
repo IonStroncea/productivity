@@ -4,7 +4,13 @@ namespace Server.Services
 {
     public class ConnecionStringProvider : IConnectionStringProvider
     {
-        private string connectionString = "Server=DESKTOP-3NTRSR2;Database=Licenta;User Id=sa;Password=sa;";
+        private string connectionString = "";
+
+        public ConnecionStringProvider(IConfiguration configuration)
+        {
+            connectionString = configuration.GetValue<string>("ProductivityApps:BD");
+        }
+
         public string GetConnectionString()
         {
             return connectionString;

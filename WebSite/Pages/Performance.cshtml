@@ -111,7 +111,7 @@
     var GetCharDataByDate = function ()
     {
             $.ajax({
-            url: 'https://localhost:7155/api/SavedValuesByDate',
+            url: '@Model.server/api/SavedValuesByDate',
             data: { type: document.getElementById("typeData").value, 
             computerId: document.getElementById("computerId").value, 
             userId: '@httpContextaccessor.HttpContext.Session.GetInt32("userId")',
@@ -145,7 +145,7 @@
 
     var GetChartData = function () {
         $.ajax({
-            url: 'https://localhost:7155/api/AllSavedValues',
+            url: '@Model.server/api/AllSavedValues',
             data: { type: document.getElementById("typeData").value, computerId: document.getElementById("computerId").value, userId: '@httpContextaccessor.HttpContext.Session.GetInt32("userId")' },
             method: 'GET',
             dataType: 'json',

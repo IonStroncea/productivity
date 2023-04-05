@@ -7,12 +7,18 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Text.Json;
+using WebSite.Services;
 
 namespace WebSite.Pages
 {
     public class MyComputersModel : PageModel
     {
         public List<GetComputerInfo> computers = new List<GetComputerInfo>();
+        private string server;
+        public MyComputersModel(ServerConnectionString serverConnection)
+        {
+            server = serverConnection.GetConnectionString();
+        }
 
         public IActionResult OnGet()
         {
@@ -21,7 +27,7 @@ namespace WebSite.Pages
                 return Redirect("/LogIn");
             }
 
-            string uri = "https://localhost:7155/api/ComputerWholeInfo?userId=" + (int)HttpContext.Session.GetInt32("userId");
+            string uri = server + "/api/ComputerWholeInfo?userId=" + (int)HttpContext.Session.GetInt32("userId");
 
             HttpClient client = new HttpClient();
             var response = client.GetStringAsync(uri);
@@ -45,7 +51,7 @@ namespace WebSite.Pages
 
         public IActionResult OnPostDelete(int id)
         {
-            string uri = "https://localhost:7155/api/ComputerWholeInfo?computerId=" + id;
+            string uri = server + "/api/ComputerWholeInfo?computerId=" + id;
 
             HttpClient client = new HttpClient();
             var response = client.DeleteAsync(uri);
