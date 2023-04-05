@@ -25,10 +25,10 @@
 <script type="text/javascript" src="https://unpkg.com/tabulator-tables/dist/js/tabulator.min.js"></script>
 <script>
     var tabledata = [
-        { name: "A", ussage: "1", id: "223", ramUssage: "34" },
-        { name: "B", ussage: "1.5", id: "352", ramUssage: "43" },
-        { name: "C", ussage: "0.7", id: "743", ramUssage: "46" },
-        { name: "D", ussage: "10", id: "643", ramUssage: "54" },
+        { name: "A", ussage: "1", id: "223", ramUssage: "34 MB" },
+        { name: "B", ussage: "1.5", id: "352", ramUssage: "43 MB" },
+        { name: "C", ussage: "0.7", id: "743", ramUssage: "46 MB" },
+        { name: "D", ussage: "10", id: "643", ramUssage: "54 MB" },
 ];
 
 //initialize table
@@ -50,10 +50,18 @@
         },
         columns: [                 //define the table columns
             { title: "Name", field: "name", editor: "input", sorter: "string" },
-            { title: "Task id", field: "id", hozAlign: "center", editor: true, sorter: "number" },
-            { title: "CPU Usage", field: "ussage", hozAlign: "left", formatter: "progress", editor: true, sorter:"number" },     
-            { title: "RAM Usage", field: "ramUssage", editor: true, hozAlign: "center", sorter: "number" }
-        ],
+            { title: "Task id", field: "id", hozAlign: "center", editor: false, sorter: "number" },
+            { title: "CPU Usage", field: "ussage", hozAlign: "center", formatter:function(cell, formatterParams, onRendered){    
+                      return cell.getValue() >= 1 ? parseFloat(cell.getValue()).toFixed(2) + "%" : "<1 %"; 
+                    }, 
+                    editor: false, sorter: "number" },
+            {
+                title: "RAM Usage", field: "ramUssage", editor: false, hozAlign: "center",
+                formatter:function(cell, formatterParams, onRendered){    
+                      return cell.getValue() + " MB"; 
+                    }, 
+                    sorter: "number"}
+        ]
     });
 
     var GetCharData = function () {

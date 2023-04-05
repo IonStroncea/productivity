@@ -13,6 +13,22 @@ namespace ServerLibrary
     public class Cache : ICache
     {
         private BlockingCollection<CacheInfo> cq = new BlockingCollection<CacheInfo>();
+        private Thread clearValues;
+        private bool clearValuesWork = true;
+        private TimeSpan liveTime = TimeSpan.FromSeconds(3);
+
+        public Cache()
+        {
+            clearValues = new Thread(() => {
+                while (clearValuesWork)
+                {
+                    ClearValues();
+                    Thread.Sleep(500);
+                }
+            });
+
+            clearValues.Start();
+        }
 
         public ReturnStatus AddCacheInfo(CacheInfo info)
         {
@@ -43,6 +59,40 @@ namespace ServerLibrary
             catch(Exception ex) 
             {
                 return ReturnStatus.Error;
+            }
+        }
+
+        ~Cache()
+        {
+            clearValuesWork = false;
+
+            if (clearValues != null && clearValues.IsAlive)
+            {
+                clearValues.Join();
+            }
+        }
+
+        private void ClearValues()
+        {
+            lock (cq)
+            {
+                List<CacheInfo> cacheInfos = cq.ToList();
+
+                cq.Dispose();
+                cq = new BlockingCollection<CacheInfo>();
+
+                foreach (var item in cacheInfos)
+                {
+                    if (item.birthTime.Add(liveTime).CompareTo(DateTime.UtcNow) > 0)
+                    {
+                        Console.WriteLine("Saved info");
+                        cq.Add(item);
+                    }
+                    else 
+                    {
+                        Console.WriteLine($"Deleted info {item.birthTime}  {item.birthTime.Add(liveTime)}  {item.birthTime.Add(liveTime).CompareTo(DateTime.UtcNow)}");
+                    }
+                }
             }
         }
 

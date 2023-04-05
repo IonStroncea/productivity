@@ -28,15 +28,19 @@
         <br/>
         <button type="button" class="btn btn-primary" onclick="recreateSocket()">Submit</button>
     </div>
-    <div class="col-10">
+    <div class="col-9">
         <canvas id="myChart" style="width:100%;max-width:1000px"></canvas>
      </div>
+    <div class="col-1">
+        <div id="percentHeight"></div>
+        <p id="percentValue"></p>
+    </div>
 </div>
 
 <script>
     var xValues = [];
     var yValues = [];
-
+    var height = 0;
 
     function redraw() {
         new Chart("myChart", {
@@ -44,10 +48,10 @@
             data: {
                 labels: xValues,
                 datasets: [{
-                    fill: false,
+                    fill: true,
                     lineTension: 0,
-                    backgroundColor: "rgba(0,0,255,1.0)",
-                    borderColor: "rgba(0,0,255,0.1)",
+                    backgroundColor: "rgba(0,0,255,0.1)",
+                    borderColor: "rgba(0,0,255,0.5)",
                     data: yValues
                 }]
             },
@@ -55,6 +59,9 @@
                 legend: { display: false },
                 scales: {
                     yAxes: [{ ticks: { min: 0, max: 100 } }],
+                },
+                animation: {
+                    duration: 0
                 }
             }
         });
@@ -117,9 +124,15 @@
             xValues.push(recieved_msg.date);      
             yValues.push(recieved_msg.usage);
 
+            height = recieved_msg.usage;
+
             ws.send(typeData + "+" + computerId + "+" + '@httpContextaccessor.HttpContext.Session.GetInt32("userId")');
 
+            document.getElementById('percentValue').innerText = height + "%";
+            document.getElementById("percentHeight").style.minHeight = (370 - (height / 100 * 370)) + "px";
+
             redraw();
+            
         }
 
         ws.onclose = function (event){
