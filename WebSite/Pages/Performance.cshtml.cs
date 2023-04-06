@@ -9,6 +9,7 @@ namespace WebSite.Pages
     {
         public Dictionary<int, string> computers { get; set; }
         public string server;
+        public int graphs;
 
         private IUserDataSource userData;
 
@@ -18,7 +19,7 @@ namespace WebSite.Pages
             server = serverConnection.GetConnectionString();
         }
 
-        public IActionResult OnGet()
+        public IActionResult OnGet(int graphs = 1)
         {
             if (HttpContext.Session.Get("userId") == null)
             {
@@ -26,7 +27,7 @@ namespace WebSite.Pages
             }
 
             this.computers = userData.GetAllComputers((int)HttpContext.Session.GetInt32("userId"));
-
+            this.graphs = graphs;
             return Page();
         }
     }

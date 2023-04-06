@@ -14,70 +14,74 @@
 <link rel="stylesheet" type="text/css" href="~/css/daterangepicker.css" />
 <script type="text/javascript" src="~/js/date.js"></script>
 
-<div class="row">
-    <div class="col-2">
-        <select class="form-select" aria-label="Default select example" id="typeData">
-            <option value = "RAM" selected>RAM</option>
-            <option value="CPU">CPU</option>
-            <option value="GPU">GPU</option>
-        </select>
-        <br/>
-        <select class="form-select" aria-label="Default select example" id="computerId">
-            <option value="0" selected>Select computer</option>
-            @foreach (var computer in @Model.computers)
-            {
-                <option value="@computer.Key">@computer.Value</option>
-            }
-        </select>
-        <br/>
-        <div>
-            <input type="text" id="demo" class="demo" value="01/01/2018 - 01/15/2018" />
+@for(int i = 0; i< Model.graphs; i++)
+{
+    <div class="row">
+        <div class="col-2">
+            <select class="form-select" aria-label="Default select example" id="typeData @i">
+                <option value = "RAM" selected>RAM</option>
+                <option value="CPU">CPU</option>
+                <option value="GPU">GPU</option>
+            </select>
+            <br/>
+            <select class="form-select" aria-label="Default select example" id="computerId @i">
+                <option value="0" selected>Select computer</option>
+                @foreach (var computer in @Model.computers)
+                {
+                    <option value="@computer.Key">@computer.Value</option>
+                }
+            </select>
+            <br/>
+            <div>
+                <input type="text" id="@i" class="demo" value="01/01/2018 - 01/15/2018" />
+            </div>
+            <br/>
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" value="" id="flexCheckChecked @i" checked>
+                <label class="form-check-label" for="flexCheckChecked @i">
+                    All time
+                </label>
+            </div>
+            <br/>
+            <button type="button" class="btn btn-primary" onclick="getData(@i)">Submit</button>
         </div>
-        <br/>
-        <div class="form-check">
-            <input class="form-check-input" type="checkbox" value="" id="flexCheckChecked" checked>
-            <label class="form-check-label" for="flexCheckChecked">
-                All time
-            </label>
-        </div>
-        <br/>
-        <button type="button" class="btn btn-primary" onclick="getData()">Submit</button>
+        <div class="col-10">
+            <canvas id="myChart @i" style="width:100%;max-width:1000px"></canvas>
+         </div>
     </div>
-    <div class="col-10">
-        <canvas id="myChart" style="width:100%;max-width:1000px"></canvas>
-     </div>
-</div>
+  }
 
 <script>
-      
-    $('#demo').daterangepicker({
-        "timePicker": true,
-        "timePicker24Hour": true,
-        "startDate": "01/24/2023",
-        "endDate": "01/30/2023"
-    }, function (start, end, label) {
-        startDate = start.format('YYYY-MM-DD HH:mm');
-        endtDate = end.format('YYYY-MM-DD HH:mm');
-        console.log('New date range selected: ' + startDate + ' to ' + endtDate + ' (predefined range: ' + label + ')');
-    });
+    for(let i =0; i < @Model.graphs; i++ )
+    {
+        $("#" + i).daterangepicker({
+            "timePicker": true,
+            "timePicker24Hour": true,
+            "startDate": "01/24/2023",
+            "endDate": "01/30/2023"
+        }, function (start, end, label) {
+            startDate[i] = start.format('YYYY-MM-DD HH:mm');
+            endtDate[i] = end.format('YYYY-MM-DD HH:mm');
+        }
+        );
+    }
 </script>
 
 <script>
-    var xValues = [];
-    var yValues = [];
+    var xValues = new Array(@Model.graphs);
+    var yValues = new Array(@Model.graphs);
 
-
-    function redraw(){
-        new Chart("myChart", {
+    function redraw(id){
+        new Chart("myChart " + id, {
         type: "line",
         data: {
-            labels: xValues,
+            labels: xValues[id],
             datasets: [{
                 fill: true,
                 lineTension: 0,
                 backgroundColor: "rgba(0,0,255,0.1)",
                 borderColor: "rgba(0,0,255,0.5)",
-                data: yValues
+                data: yValues[id]
             }]
         },
         options: {
@@ -90,73 +94,81 @@
     }
 </script>
 <script>
-    var startDate;
-    var endtDate;
+    var startDate = new Array(@Model.graphs);
+    var endtDate = new Array(@Model.graphs);
 
     $(document).ready(function () {
-        GetChartData();
+        for (let i = 0; i < @Model.graphs; i++) {
+            xValues[i] = new Array(0);
+            yValues[i] = new Array(0);
+        }
+
+        for (let i = 0; i < @Model.graphs; i++)
+        {
+            redraw(i);
+        }
     });
 
     var chartData = {};
 
-    function myFunction(d) {
-        xValues.push(d.date.toString('dd-MM-yyyy hh:mm:ss'));
-        yValues.push(d.usage);
+    function myFunction(d, i) {
+        xValues[i].push(d.date.toString('dd-MM-yyyy hh:mm:ss'));
+        yValues[i].push(d.usage);
     }
 
     function compare(a, b) {
         return Date.compare(Date.parse(a.date), Date.parse(b.date));
     }
 
-    var GetCharDataByDate = function ()
+    function GetCharDataByDate(id)
     {
             $.ajax({
             url: '@Model.server/api/SavedValuesByDate',
-            data: { type: document.getElementById("typeData").value, 
-            computerId: document.getElementById("computerId").value, 
-            userId: '@httpContextaccessor.HttpContext.Session.GetInt32("userId")',
-            startDate : startDate,
-            endtDate : endtDate},
+            data: { type: document.getElementById("typeData " + id).value,
+                    computerId: document.getElementById("computerId " + id).value,
+                    userId: '@httpContextaccessor.HttpContext.Session.GetInt32("userId")',
+            startDate : startDate[id],
+            endtDate : endtDate[id]},
             method: 'GET',
             dataType: 'json',
             success: function (d) {
-                xValues = [];
-                yValues = [];
+                xValues[id] = new Array(0);
+                yValues[id] = new Array(0);
 
                 d.sort(compare);
-                d.forEach(myFunction);
+                d.forEach(element =>myFunction(element, id));
 
-                redraw();
+                redraw(id);
             }
         });
     };
 
-    var getData = function()
+    var getData = function(id)
     {
-        if (document.getElementById('flexCheckChecked').checked)
+        if (document.getElementById('flexCheckChecked ' + id).checked)
         {
-            GetChartData();
+            GetChartData(id);
         }
         else
         {
-            GetCharDataByDate();
+            GetCharDataByDate(id);
         }
     };
 
-    var GetChartData = function () {
+    function GetChartData(id){
         $.ajax({
             url: '@Model.server/api/AllSavedValues',
-            data: { type: document.getElementById("typeData").value, computerId: document.getElementById("computerId").value, userId: '@httpContextaccessor.HttpContext.Session.GetInt32("userId")' },
+            data: { type: document.getElementById("typeData " + id).value, computerId: document.getElementById("computerId " + id).value, userId: '@httpContextaccessor.HttpContext.Session.GetInt32("userId")' },
             method: 'GET',
             dataType: 'json',
             success: function (d) {
-                xValues = [];
-                yValues = [];
+                xValues[id] = new Array(0);
+                yValues[id] = new Array(0);
 
                 d.sort(compare);
-                d.forEach(myFunction);
+                d.forEach(element =>myFunction(element, id));
 
-                redraw();
+                redraw(id);
             }
         });
     };
