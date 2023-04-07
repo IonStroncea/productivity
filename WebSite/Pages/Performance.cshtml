@@ -13,6 +13,19 @@
 <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
 <link rel="stylesheet" type="text/css" href="~/css/daterangepicker.css" />
 <script type="text/javascript" src="~/js/date.js"></script>
+<div class="row mb-1">
+    <div class = "col">
+        <form method="post">
+            <button type="submit" class="btn btn-primary" asp-page-handler="edit" asp-route-graphs="@(Model.graphs > 1 ? Model.graphs - 1 : Model.graphs)">Remove Graph</button>
+        </form>
+    </div>
+    <div class = "col">
+        <form method="post">
+            <button type="submit" class="btn btn-primary" asp-page-handler="edit" asp-route-graphs="@(Model.graphs + 1)">Add Graph</button>
+        </form>
+    </div>
+</div>
+<br/>
 
 @for(int i = 0; i< Model.graphs; i++)
 {

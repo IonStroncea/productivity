@@ -30,5 +30,10 @@ namespace WebSite.Pages
             this.graphs = graphs;
             return Page();
         }
+
+        public IActionResult OnPostEdit(int graphs)
+        {
+            return OnGet(graphs);
+        }
     }
 }
