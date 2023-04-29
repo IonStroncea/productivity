@@ -10,49 +10,66 @@
 <script type="text/javascript" src="~/js/moment.min.js"></script>
 <script type="text/javascript" src="~/js/date.js"></script>
 
-<div class="row">
-    <div class="col-2">
-        <select class="form-select" aria-label="Default select example" id="typeData">
-            <option value = "RAM" selected>RAM</option>
-            <option value="CPU">CPU</option>
-            <option value="GPU">GPU</option>
-        </select>
-        <br/>
-        <select class="form-select" aria-label="Default select example" id="computerId">
-            <option value="0" selected>Select computer</option>
-            @foreach (var computer in @Model.computers)
-            {
-                <option value="@computer.Key">@computer.Value</option>
-            }
-        </select>
-        <br/>
-        <button type="button" class="btn btn-primary" onclick="recreateSocket()">Submit</button>
+<div class="row mb-1">
+    <div class = "col">
+        <form method="post">
+            <button type="submit" class="btn btn-primary" asp-page-handler="edit" asp-route-graphs="@(Model.graphs > 1 ? Model.graphs - 1 : Model.graphs)">Remove Graph</button>
+        </form>
     </div>
-    <div class="col-9">
-        <canvas id="myChart" style="width:100%;max-width:1000px"></canvas>
-     </div>
-    <div class="col-1">
-        <div id="percentHeight"></div>
-        <p id="percentValue"></p>
+    <div class = "col">
+        <form method="post">
+            <button type="submit" class="btn btn-primary" asp-page-handler="edit" asp-route-graphs="@(Model.graphs + 1)">Add Graph</button>
+        </form>
     </div>
 </div>
+<br/>
+
+@for(int i = 0; i< Model.graphs; i++)
+{
+    <div class="row">
+        <div class="col-2">
+            <select class="form-select" aria-label="Default select example" id="typeData @i">
+                <option value = "RAM" selected>RAM</option>
+                <option value="CPU">CPU</option>
+                <option value="GPU">GPU</option>
+            </select>
+            <br/>
+            <select class="form-select" aria-label="Default select example" id="computerId @i">
+                <option value="0" selected>Select computer</option>
+                @foreach (var computer in @Model.computers)
+                {
+                    <option value="@computer.Key">@computer.Value</option>
+                }
+            </select>
+            <br/>
+            <button type="button" class="btn btn-primary" onclick="recreateSocket(@i)">Submit</button>
+        </div>
+        <div class="col-9">
+            <canvas id="myChart @i" style="width:100%;max-width:1000px"></canvas>
+         </div>
+        <div class="col-1">
+            <div id="percentHeight @i"></div>
+            <p id="percentValue @i"></p>
+        </div>
+    </div>
+}
 
 <script>
-    var xValues = [];
-    var yValues = [];
-    var height = 0;
+    var xValues = new Array(@Model.graphs);
+    var yValues = new Array(@Model.graphs);
+    var height = new Array(@Model.graphs);
 
-    function redraw() {
-        new Chart("myChart", {
+    function redraw(id) {
+        new Chart("myChart " + id, {
             type: "line",
             data: {
-                labels: xValues,
+                labels: xValues[id],
                 datasets: [{
                     fill: true,
                     lineTension: 0,
                     backgroundColor: "rgba(0,0,255,0.1)",
                     borderColor: "rgba(0,0,255,0.5)",
-                    data: yValues
+                    data: yValues[id]
                 }]
             },
             options: {
@@ -68,40 +85,48 @@
     }
 </script>
 <script>
-    var ws;
-    var typeData;
-    var computerId;
+    var ws = new Array(@Model.graphs);
+    var typeData = new Array(@Model.graphs);
+    var computerId = new Array(@Model.graphs);
     var userId = '@httpContextaccessor.HttpContext.Session.GetInt32("userId")';
 
 
-    $(document).ready(function () {  
-        for (let i = 0; i < 100; i++) {
-            xValues.push(0);     
-            yValues.push(0);
+    $(document).ready(function () {
+        for (let i = 0; i < @Model.graphs; i++) {
+            xValues[i] = new Array(0);
+            yValues[i] = new Array(0);
+            height[i] = 0;
+
+            for (let count = 0; count < 100; count++) {
+                xValues[i].push(0);     
+                yValues[i].push(0);
+            }
         }
 
-        typeData = document.getElementById("typeData").value;
-        computerId = document.getElementById("computerId").value;
-
-        redraw();
-        ws = CreateSocket();
+        for(let i = 0; i < @Model.graphs; i++) {
+            typeData[i] = document.getElementById("typeData " + i).value;
+            computerId[i] = document.getElementById("computerId " + i).value;
+        
+        redraw(i);
+        ws[i] = CreateSocket(i);
+        }
     });
 
-    function recreateSocket()
+    function recreateSocket(id)
     {
-        typeData = document.getElementById("typeData").value;
-        computerId = document.getElementById("computerId").value;
+        typeData[id] = document.getElementById("typeData " + id).value;
+        computerId[id] = document.getElementById("computerId " + id).value;
 
-        xValues = [];
-        yValues = [];
+        xValues[id] = new Array(0);
+        yValues[id] = new Array(0);
 
         for (let i = 0; i < 100; i++) {
-            xValues.push(0);     
-            yValues.push(0);
+            xValues[id].push(0);     
+            yValues[id].push(0);
         }
     }
 
-    function CreateSocket()
+    function CreateSocket(id)
     {
         var address = '@Model.server';
         address = address.replace('https', '');
@@ -111,27 +136,27 @@
 
         ws.onopen = function()
         {
-            ws.send(typeData + "+" + computerId + "+" + '@httpContextaccessor.HttpContext.Session.GetInt32("userId")');
+            ws.send(typeData[id] + "+" + computerId[id] + "+" + '@httpContextaccessor.HttpContext.Session.GetInt32("userId")');
         }
 
         ws.onmessage = function(evt)
         {
             var recieved_msg = JSON.parse(evt.data);
 
-            xValues.shift();
-            yValues.shift();
+            xValues[id].shift();
+            yValues[id].shift();
 
-            xValues.push(recieved_msg.date);      
-            yValues.push(recieved_msg.usage);
+            xValues[id].push(recieved_msg.date);      
+            yValues[id].push(recieved_msg.usage);
 
-            height = recieved_msg.usage;
+            height[id] = recieved_msg.usage;
 
-            ws.send(typeData + "+" + computerId + "+" + '@httpContextaccessor.HttpContext.Session.GetInt32("userId")');
+            ws.send(typeData[id] + "+" + computerId[id] + "+" + '@httpContextaccessor.HttpContext.Session.GetInt32("userId")');
 
-            document.getElementById('percentValue').innerText = height + "%";
-            document.getElementById("percentHeight").style.minHeight = (370 - (height / 100 * 370)) + "px";
+            document.getElementById('percentValue ' + id).innerText = height[id] + "%";
+            document.getElementById("percentHeight " + id).style.minHeight = (370 - (height[id] / 100 * 370)) + "px";
 
-            redraw();
+            redraw(id);
             
         }
 
