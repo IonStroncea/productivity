@@ -10,6 +10,8 @@ namespace DAL
     {
         Dictionary<int, string> GetAllComputers(int userId);
 
+        Dictionary<string, string> GetUserDTO(int userId);
+
         int CreateComputer(int userId, string compName);
     }
 }

@@ -1,6 +1,7 @@
 ﻿using DAL;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using ServerLibrary;
 
 namespace Server.Controllers
 {
@@ -38,6 +39,19 @@ namespace Server.Controllers
             }
 
             return "Error";
+        }
+
+        [HttpGet("/userDTO")]
+        public UserReaderDTO GetUserReaderDTO(int userId) 
+        {
+            var result = userData.GetUserDTO(userId);
+
+            UserReaderDTO dto = new UserReaderDTO();
+
+            dto.UserName = result.GetValueOrDefault("UserName");
+            dto.Name = result.GetValueOrDefault("Name");
+
+            return dto;
         }
 
         [HttpGet]
