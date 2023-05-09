@@ -1,20 +1,49 @@
 ﻿@page
+@inject IHttpContextAccessor httpContextaccessor
 @model IndexModel
 @{
     ViewData["Title"] = "Home page";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome to ANALIZER</h1>
-    <br>
 
-    <h3> Domnload application here: "dont forget to add application dowmload link"</h3>
-    <br>
-    <h4>ANALIZER is a system build for helping users to monitor thei computers in online mode.<br>
-        This website will allow you to gain live and stored information about yours computers productivity. 
-        Is includes : <b>Resources ussage, Runnig Processes, General information about computers.</b>
-        </h4>
-    <br>
-    <img src="~/images/crying-cat.jpg" />
-    <h5>DON'T forget this applicaton is still in developement.</h5>
-</div>
+@if (httpContextaccessor.HttpContext.Session.Get("userId") == null)
+{
+    <div class="">
+        <div class="m-5">
+            <h1 class="display-4">Welcome to ANALIZER</h1>
+            <br>
+            <h3> Domnload application <a href="">Here!</a></h3>
+            <br>
+            <h4>ANALIZER is a system build for helping users to monitor their computers in online mode.<br>
+                This website will allow you to gain live and stored information about yours’ computers productivity.<br>
+                It includes : 
+                <b>
+                    <ul>
+
+                        <li>Resources usage</li>
+                        <li>Running Processes</li>
+                        <li>General information about computers.</li>
+                    </ul> 
+                </b>
+                <br>
+                <br>
+                To start using the website you have to:
+                    <ul>
+                    <li>Register on website. Pss, Click <a href="/Register">Here!</a></li>
+                    <li>Download our desktop application. <a href="">Here!</a></li>
+                    <li>Launch our application by double clicking on exe file.</li>
+                    <li>Once the application is running, it already collects and shows information about your computer.</li>
+                    <li>To see it in online mode you have to log in and choose your computer’s name.</li>
+                    <li>One you do that, you can open the website, log in and view your data stored on our servers, and in live mode.</li>
+                    </ul>
+                </h4>
+            <br>
+            <h5>DON'T forget this applicaton is still in developement.</h5>
+        </div>
+    </div>
+}
+else
+{
+        
+}
+
